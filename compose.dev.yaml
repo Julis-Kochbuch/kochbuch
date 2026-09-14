@@ -17,6 +17,13 @@ services:
     build:
       context: ./backend
       target: development
+    develop:
+      watch:
+        - path: ./backend
+          action: sync+restart
+          target: /app/backend
+        - path: ./backend/package.json
+          action: rebuild
     environment:
       MODE: dev
 
@@ -26,6 +33,13 @@ services:
     build:
       context: ./client
       target: development
+    develop:
+      watch:
+        - path: ./client
+          action: sync
+          target: /app/client
+        - path: ./client/package.json
+          action: rebuild
     labels:
       traefik.http.services.client.loadbalancer.server.port: 5173
 

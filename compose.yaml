@@ -18,7 +18,7 @@ services:
   # Database
 
   db:
-    image: postgres:18
+    build: ./database
     restart: unless-stopped
     environment:
       POSTGRES_USER: user
@@ -33,16 +33,10 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: ./backend/Dockerfile
       target: production
     restart: unless-stopped
-    develop:
-      watch:
-        - path: ./backend
-          action: sync+restart
-          target: /app
-        - path: ./backend/package.json
-          action: rebuild
     environment:
       CHOKIDAR_USEPOLLING: true
       DATABASE_HOST: db
@@ -68,16 +62,10 @@ services:
 
   client:
     build:
-      context: ./client
+      context: .
+      dockerfile: ./client/Dockerfile
       target: production
     restart: unless-stopped
-    develop:
-      watch:
-        - path: ./client
-          action: sync
-          target: /app
-        - path: ./client/package.json
-          action: rebuild
     depends_on:
       - backend
     environment:
