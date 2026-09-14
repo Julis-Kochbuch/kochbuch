@@ -1,5 +1,25 @@
 services:
 
+  # Proxy
+
+  proxy:
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    ports:
+      - 80:80
+      - 8080:8080
+
+  # Backend
+
+  backend:
+    build:
+      context: ./backend
+      target: development
+    environment:
+      MODE: dev
+
   # Client
 
   client:
@@ -7,16 +27,13 @@ services:
       context: ./client
       target: development
     labels:
-      traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
-
-
 
   # pgAdmin
 
   pgadmin:
     image: elestio/pgadmin:latest
-    restart: always
+    restart: unless-stopped
     environment:
       - PGADMIN_DEFAULT_EMAIL=login@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=password
@@ -24,7 +41,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     labels:
-      traefik.http.routers.pgadmin.rule: Host(`db.localhost`)
+      traefik.http.routers.pgadmin.rule: Host(`db.${HOSTNAME:?}`)
       traefik.http.services.pgadmin.loadbalancer.server.port: 5004
 
 volumes:

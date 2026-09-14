@@ -1,11 +1,13 @@
 services:
 
   # Proxy
-  
+
   proxy:
     image: traefik:v3.7
-    restart: always
-    command: --providers.docker
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
     ports:
       - 80:80
     depends_on:
@@ -13,27 +15,27 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-
-
   # Database
 
   db:
     image: postgres:18
-    restart: always
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=kochbuch
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_admin
+      POSTGRES_DB: kochbuch
+    secrets:
+      - pg_pw_admin
     volumes:
       - postgres_data:/var/lib/postgresql
-
-
 
   # Backend
 
   backend:
-    build: ./backend
-    restart: always
+    build:
+      context: ./backend
+      target: production
+    restart: unless-stopped
     develop:
       watch:
         - path: ./backend
@@ -42,29 +44,33 @@ services:
         - path: ./backend/package.json
           action: rebuild
     environment:
-      - CHOKIDAR_USEPOLLING=true
-      - DATABASE_HOST=db
-      - DATABASE_USER=user
-      - DATABASE_PASSWORD=password
-      - DATABASE_DB=kochbuch
-      - PORT=5001
+      CHOKIDAR_USEPOLLING: true
+      DATABASE_HOST: db
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_DB: kochbuch
+      PORT: 5001
+      MODE: prod
+    secrets:
+      - pg_pw_admin
+      - session_secret
     volumes:
       - uploads:/app/uploads
     depends_on:
       - db
     labels:
-      traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
+      traefik.http.routers.backend.rule: Host(`${HOSTNAME:?}`) && PathPrefix(`/api`)
+      traefik.http.routers.backend.middlewares: "backend-stripprefix"
+      traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes: "/api"
       traefik.http.services.backend.loadbalancer.server.port: 5001
 
-
-
   # Client
-  
+
   client:
     build:
       context: ./client
       target: production
-    restart: always
+    restart: unless-stopped
     develop:
       watch:
         - path: ./client
@@ -75,9 +81,17 @@ services:
     depends_on:
       - backend
     environment:
-      - CHOKIDAR_USEPOLLING=true
+      CHOKIDAR_USEPOLLING: true
+      MODE: prod
+    labels:
+      traefik.http.routers.client.rule: "Host(`${HOSTNAME:?}`)"
+      traefik.http.services.client.loadbalancer.server.port: 5173
 
-
+secrets:
+  pg_pw_admin:
+    file: ./secrets/pg_pw_admin
+  session_secret:
+    file: ./secrets/session_secret
 
 volumes:
   postgres_data:
