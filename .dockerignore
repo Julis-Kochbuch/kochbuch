@@ -1,7 +1,5 @@
 node_modules
-.gitignore
+**/dist
 *.md
-*.env
-*/dist
-
-cookies.txt
+.git
+.gitignore
