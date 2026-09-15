@@ -15,7 +15,6 @@ services:
 
   backend:
     build:
-      context: ./backend
       target: development
     develop:
       watch:
@@ -31,7 +30,6 @@ services:
 
   client:
     build:
-      context: ./client
       target: development
     develop:
       watch:

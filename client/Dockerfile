@@ -5,19 +5,15 @@ FROM node:24 AS base
 WORKDIR /app
 
 COPY package*.json ./
+COPY common/package*.json ./common/
+COPY client/package*.json ./client/
+
 RUN npm ci
 
-COPY . .
+COPY common ./common
+COPY client ./client
 
-
-
-# Development
-
-FROM base AS development
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN npm run build -w @kochbuch/common
 
 
 
@@ -25,7 +21,7 @@ CMD ["npm", "run", "dev", "--", "--host"]
 
 FROM base AS builder
 
-RUN npm run build
+RUN npm run build -w @kochbuch/client
 
 
 
@@ -33,8 +29,20 @@ RUN npm run build
 
 FROM nginx:alpine AS production
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/client/dist /usr/share/nginx/html
 
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+
+
+
+# Development
+
+FROM base AS development
+
+WORKDIR /app/client
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host"]

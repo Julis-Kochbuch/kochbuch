@@ -5,9 +5,15 @@ FROM node:24 AS base
 WORKDIR /app
 
 COPY package*.json ./
+COPY common/package*.json ./common/
+COPY backend/package*.json ./backend/
+
 RUN npm ci
 
-COPY . .
+COPY common ./common
+COPY backend ./backend
+
+RUN npm run build -w @kochbuch/common
 
 
 
@@ -15,7 +21,7 @@ COPY . .
 
 FROM base AS build
 
-RUN npm run build
+RUN npm run build -w @kochbuch/backend
 
 
 
@@ -26,9 +32,15 @@ FROM node:24 AS production
 WORKDIR /app
 
 COPY package*.json ./
+COPY common/package*.json ./common/
+COPY backend/package*.json ./backend/
+
 RUN npm ci --omit=dev
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/backend/dist ./backend/dist
+COPY --from=build /app/common/dist ./common/dist
+
+WORKDIR /app/backend
 
 EXPOSE 5001
 
@@ -39,6 +51,8 @@ CMD ["npm", "start"]
 # Development
 
 FROM base AS development
+
+WORKDIR /app/backend
 
 EXPOSE 5001
 
