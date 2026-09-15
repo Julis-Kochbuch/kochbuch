@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { requireAuth } from '../src/utils.js';
+import { requireAuth } from '../utils/requireAuth.js';
 import uploadsController from '../controllers/uploadsController.js';
 import { upload } from '../config/multer.js';
 

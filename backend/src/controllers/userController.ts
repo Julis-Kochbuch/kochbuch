@@ -1,8 +1,11 @@
+import { type Request, type Response, type NextFunction } from 'express';
 import bcrypt from 'bcrypt';
+import { DatabaseError } from 'pg';
 
 import * as db from '../db/index.js';
+import type { User, ShareableUserList, UserFull, Theme } from '@kochbuch/common'
 
-const allUsersGet = async (req, res) => {
+const allUsersGet = async (req: Request, res: Response<User[]>) => {
     const result = await db.query(`
         SELECT u.id, u.name, u.role
         FROM users u
@@ -10,10 +13,10 @@ const allUsersGet = async (req, res) => {
         `
     );
 
-    res.status(200).json(result.rows);
+    res.status(200).json(result.rows as User[]);
 }
 
-const innerApiKeysGet = async (req, res) => {
+const innerApiKeysGet = async (req: Request, res: Response<ShareableUserList>) => {
     const result = await db.query(`
         SELECT a.id AS key_id, a.name as foreign_user_name, u.name as local_user_name
         FROM api_keys_inner a
@@ -24,7 +27,7 @@ const innerApiKeysGet = async (req, res) => {
         [req.session.userId]
     );
 
-    const innerApiKeys_parsed = {
+    const innerApiKeys_parsed: ShareableUserList = {
         local: result.rows.filter((entry) => entry.local_user_name).map(key_set => ({
             "name": key_set.local_user_name,
             "key_id": key_set.key_id
@@ -38,7 +41,7 @@ const innerApiKeysGet = async (req, res) => {
     res.status(200).json(innerApiKeys_parsed);
 }
 
-const meGet = async (req, res) => {
+const meGet = async (req: Request, res: Response<UserFull>) => {
     const result = await db.query(`
         SELECT u.id, u.name, u.role, u.setting_theme_slug, u.setting_advanced_options
         FROM users u
@@ -47,7 +50,7 @@ const meGet = async (req, res) => {
         [req.session.userId]
     );
 
-    const user_parsed = {
+    const user_parsed: UserFull = {
         id: result.rows[0].id,
         name: result.rows[0].name,
         role: result.rows[0].role,
@@ -58,7 +61,7 @@ const meGet = async (req, res) => {
     res.status(200).json(user_parsed);
 }
 
-const mePost = async (req, res) => {
+const mePost = async (req: Request<{}, {}, { username: string, new_password: string, current_password: string }>, res: Response<{ message: string }>) => {
     const { username, new_password, current_password } = req.body;
 
     const password = await db.query(`
@@ -71,11 +74,11 @@ const mePost = async (req, res) => {
 
     const valid = await bcrypt.compare(current_password, password.rows[0].password_hash);
     if (!valid) {
-        return res.status(400).json({ error: 'Wrong password' });
+        return res.status(400).json({ message: 'Wrong password' });
     }
 
     const client = await db.pool.connect();
-    
+
     try {
         await client.query(`BEGIN`);
 
@@ -115,16 +118,18 @@ const mePost = async (req, res) => {
     } catch (err) {
         await client.query('ROLLBACK');
 
-        if (err.code === '22001') {
-            return res.status(400).json({ message: 'Too long string submitted' });
-        }
+        if (err instanceof DatabaseError) {
+            if (err.code === '22001') {
+                return res.status(400).json({ message: 'Too long string submitted' });
+            }
 
-        if (err.code === '23502') {
-            return res.status(400).json({ message: 'Username must not be empty' });
-        }
+            if (err.code === '23502') {
+                return res.status(400).json({ message: 'Username must not be empty' });
+            }
 
-        if (err.code === '23505') {
-            return res.status(400).json({ message: 'Username already taken' });
+            if (err.code === '23505') {
+                return res.status(400).json({ message: 'Username already taken' });
+            }
         }
 
         console.error(err);
@@ -138,21 +143,25 @@ const mePost = async (req, res) => {
     }
 }
 
-const newUserPost = async (req, res) => {
+const newUserPost = async (req: Request<{}, {}, { username: string, password: string }>, res: Response<{ message: string, id?: any }>) => {
     const { username, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await db.query(`
-        INSERT INTO users (name, password_hash, role, setting_theme_slug)
-            VALUES ($1, $2, 0, $3)
-            RETURNING id;
-        `, [username, hashedPassword, "default"])
-        .catch(err => {
+        const result = await db.query(`
+            INSERT INTO users (name, password_hash, role, setting_theme_slug)
+                VALUES ($1, $2, 0, $3)
+                RETURNING id;
+            `, [username, hashedPassword, "default"]);
+
+        res.status(201).json({ message: 'User created successfully', id: result.rows[0].id });
+    } catch (err) {
+        if (err instanceof DatabaseError) {
             if (err.code === '22001') {
                 return res.status(400).json({ message: 'Too long string submitted' });
             }
-            
+
             if (err.code === '23502') {
                 return res.status(400).json({ message: 'Username must not be empty' });
             }
@@ -160,28 +169,23 @@ const newUserPost = async (req, res) => {
             if (err.code === '23505') {
                 return res.status(400).json({ message: 'Username already taken' });
             }
-            
-            return res.status(400).json({ message: 'Bad Request' });
-        });
+        }
 
-    res.status(201).json({ message: 'User created successfully', id: result.rows[0].id });
+        return res.status(400).json({ message: 'Bad Request' });
+    }
 }
 
-const themesListGet = async (req, res) => {
+const themesListGet = async (req: Request, res: Response<Theme[]>) => {
     const result = await db.query(`
         SELECT t.slug
         FROM themes t;
         `
     );
 
-    const user_parsed = {
-        themes: result.rows,
-    }
-
-    res.status(200).json(user_parsed);
+    res.status(200).json(result.rows as Theme[]);
 }
 
-const themePost = async (req, res) => {
+const themePost = async (req: Request<{}, {}, { slug: string }>, res: Response<{ message: string }>) => {
     const { slug } = req.body;
 
     await db.query(`
@@ -194,12 +198,12 @@ const themePost = async (req, res) => {
     res.status(200).json({ message: 'Theme updated successfully' });
 }
 
-const userDelete = async (req, res) => {
+const userDelete = async (req: Request<{ id: string }, {}, { password: string }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
     const { password } = req.body;
 
     if (!password) {
-        return res.status(400).json({ error: 'Wrong password' });
+        return res.status(400).json({ message: 'Wrong password' });
     }
 
     const password_check = await db.query(`
@@ -212,19 +216,19 @@ const userDelete = async (req, res) => {
 
     const valid = await bcrypt.compare(password, password_check.rows[0].password_hash);
     if (!valid) {
-        return res.status(400).json({ error: 'Wrong password' });
+        return res.status(400).json({ message: 'Wrong password' });
     }
 
     await db.query(`
         DELETE FROM users
         WHERE id = $1;
         `, [id]);
-    
+
     res.status(200).json({ message: 'User deleted' });
 }
 
 
-const userPost = async (req, res) => {
+const userPost = async (req: Request<{ id: string }, {}, { username?: string, role?: number, new_password?: string, admin_password?: string }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
     const { username, role, new_password, admin_password } = req.body;
 
@@ -252,9 +256,9 @@ const userPost = async (req, res) => {
 
             const valid = await bcrypt.compare(admin_password, password_check.rows[0].password_hash);
             if (!valid) {
-                return res.status(400).json({ error: 'Wrong password' });
+                return res.status(400).json({ message: 'Wrong password' });
             }
-            
+
             const hashedPassword = await bcrypt.hash(new_password, 10);
 
             await client.query(`
@@ -271,16 +275,18 @@ const userPost = async (req, res) => {
     } catch (err) {
         await client.query('ROLLBACK');
 
-        if (err.code === '22001') {
-            return res.status(400).json({ message: 'Too long string submitted' });
-        }
+        if (err instanceof DatabaseError) {
+            if (err.code === '22001') {
+                return res.status(400).json({ message: 'Too long string submitted' });
+            }
 
-        if (err.code === '23502') {
-            return res.status(400).json({ message: 'Username must not be empty' });
-        }
+            if (err.code === '23502') {
+                return res.status(400).json({ message: 'Username must not be empty' });
+            }
 
-        if (err.code === '23505') {
-            return res.status(400).json({ message: 'Username already taken' });
+            if (err.code === '23505') {
+                return res.status(400).json({ message: 'Username already taken' });
+            }
         }
 
         console.error(err);
@@ -294,4 +300,4 @@ const userPost = async (req, res) => {
     }
 }
 
-export default {allUsersGet, innerApiKeysGet, meGet, mePost, newUserPost, themesListGet, themePost, userDelete, userPost}
+export default { allUsersGet, innerApiKeysGet, meGet, mePost, newUserPost, themesListGet, themePost, userDelete, userPost }

@@ -1,4 +1,4 @@
-import { DatabaseError, Pool, type QueryArrayConfig } from 'pg';
+import { DatabaseError, Pool } from 'pg';
 import fs from "node:fs";
 
 const pgPassword = fs

@@ -10,7 +10,7 @@ import userRoutes from './routes/userRoutes.js';
 import recipeRoutes from './routes/recipeRoutes.js';
 import uploadsRoutes from './routes/uploadsRoutes.js';
 
-import { createFirstUser, checkThemes } from './src/utils.js';
+import { checkThemes } from './utils/checkThemes.js';
 
 const app = express();
 
@@ -31,13 +31,13 @@ app.use(
     })
 );
 
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
-app.use('/api/user', userRoutes);
+app.use('/user', userRoutes);
 
-app.use('/api/recipe', recipeRoutes);
+app.use('/recipe', recipeRoutes);
 
-app.use('/api/uploads', uploadsRoutes);
+app.use('/uploads', uploadsRoutes);
 
 
 
@@ -49,8 +49,6 @@ await waitPort({
 }).then(() => {
     console.log(`Connected to database`)
 });
-
-createFirstUser();
 
 checkThemes();
 

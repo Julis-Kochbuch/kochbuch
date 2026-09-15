@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { requireAuth } from '../src/utils.js';
+import { requireAuth } from '../utils/requireAuth.js';
 import recipeController from '../controllers/recipeController.js';
 
 const router = express.Router();

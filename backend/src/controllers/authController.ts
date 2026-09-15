@@ -1,12 +1,13 @@
+import { type Request, type Response, type NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 
 import * as db from '../db/index.js';
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
     if (req.session.userId) {
-        req.session.destroy();
+        req.session.destroy;
     }
 
     const result = await db.query(`
@@ -35,7 +36,7 @@ const login = async (req, res) => {
     res.status(200).json({ message: 'Logged in successfully' });
 }
 
-const logout = async (req, res) => {
+const logout = async (req: Request, res: Response) => {
     if (req.session.userId) {
         req.session.destroy(() => {
             res.status(200).json({ message: 'Logged out successfully' });
@@ -45,4 +46,4 @@ const logout = async (req, res) => {
     }
 }
 
-export default {login, logout}
+export default { login, logout }

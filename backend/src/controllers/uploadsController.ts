@@ -1,13 +1,13 @@
+import { type Request, type Response, type NextFunction } from 'express';
 import { fileTypeFromBuffer } from "file-type";
 import sharp from "sharp";
 import fs from "fs/promises";
-import path from "path";
 
 import * as db from '../db/index.js';
 
 export const uploadDir = "/app/uploads";
 
-const uploadRecipeImage = async (req, res) => {
+const uploadRecipeImage = async (req: Request<{ id: string }, {}, { slots: number | number[] }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
 
     const authorization_result = await db.query(`
@@ -22,7 +22,9 @@ const uploadRecipeImage = async (req, res) => {
         return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const files = req.files ?? [];
+    const files: Express.Multer.File[] = Array.isArray(req.files)
+        ? req.files
+        : Object.values(req.files ?? {}).flat();
     const slots = Array.isArray(req.body.slots)
         ? req.body.slots
         : [req.body.slots];
@@ -31,8 +33,8 @@ const uploadRecipeImage = async (req, res) => {
         return res.status(400).json({ message: 'Bad request' });
     }
 
-    for (let i = 0; i < files.length; i++) {
-        const type = await fileTypeFromBuffer(files[i].buffer);
+    for (const [i, file] of files.entries()) {
+        const type = await fileTypeFromBuffer(file.buffer);
 
         if (!type) {
             return res.status(400).json({ message: 'Unknown file' });
@@ -42,7 +44,7 @@ const uploadRecipeImage = async (req, res) => {
             return res.status(400).json({ message: 'Wrong file type' });
         }
 
-        const image = await sharp(files[i].buffer)
+        const image = await sharp(file.buffer)
             .resize({
                 width: 1080,
                 height: 1080,
@@ -59,7 +61,7 @@ const uploadRecipeImage = async (req, res) => {
     res.status(200).json({ message: 'Upload successfull' });
 }
 
-const recipeImageGet = async (req, res) => {
+const recipeImageGet = async (req: Request<{ recipe_id: string, image_name: string }>, res: Response<{ message: string }>) => {
     const { recipe_id, image_name } = req.params;
 
     const authorization_result = await db.query(`
@@ -83,7 +85,7 @@ const recipeImageGet = async (req, res) => {
     });
 }
 
-const themeFileGet = async (req, res) => {
+const themeFileGet = async (req: Request<{ theme_slug: string, file_name: string }>, res: Response<{ message: string }>) => {
     const { theme_slug, file_name } = req.params;
 
     const file = `${uploadDir}/themes/${theme_slug}/${file_name}`;
@@ -102,4 +104,4 @@ const themeFileGet = async (req, res) => {
         });
 }
 
-export default {uploadRecipeImage, recipeImageGet, themeFileGet}
+export default { uploadRecipeImage, recipeImageGet, themeFileGet }

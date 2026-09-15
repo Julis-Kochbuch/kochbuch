@@ -1,11 +1,13 @@
-import bcrypt from 'bcrypt';
+import { type Request, type Response, type NextFunction } from 'express';
 import fs from "fs/promises";
+import { DatabaseError } from 'pg';
 
 import * as db from '../db/index.js';
 import { uploadDir } from './uploadsController.js';
 import console from 'console';
+import type { Category, Recipe, RecipeListByCategory, ShareableUser, User, UserSimplified } from '@kochbuch/common'
 
-const allRecipesGet = async (req, res) => {
+const allRecipesGet = async (req: Request, res: Response<RecipeListByCategory[]>) => {
     const result = await db.query(`
         SELECT r.id, r.name, c.id AS category_id, c.name AS category_name, a.role
         FROM recipes r
@@ -18,15 +20,15 @@ const allRecipesGet = async (req, res) => {
 
     /* das kann später die Datenbank selber machen */
 
-    let currentCategoryId = undefined;
-    let parsedResult = [{recipes: []}]
+    let currentCategoryId: number | undefined = undefined;
+    let parsedResult: RecipeListByCategory[] = [{ recipes: [] }];
 
     result.rows.forEach(recipe => {
         if (recipe.category_id === currentCategoryId) {
-            parsedResult[parsedResult.length - 1].recipes.push({id: recipe.id, name: recipe.name});
+            parsedResult[parsedResult.length - 1]!.recipes.push({ id: recipe.id, name: recipe.name });
         } else {
-            parsedResult.push({category_name: recipe.category_name, recipes: []});
-            parsedResult[parsedResult.length - 1].recipes.push({id: recipe.id, name: recipe.name});
+            parsedResult.push({ category_name: recipe.category_name, recipes: [] });
+            parsedResult[parsedResult.length - 1]!.recipes.push({ id: recipe.id, name: recipe.name });
             currentCategoryId = recipe.category_id;
         }
     });
@@ -34,7 +36,7 @@ const allRecipesGet = async (req, res) => {
     res.status(200).json(parsedResult);
 }
 
-const categoriesGet = async (req, res) => {
+const categoriesGet = async (req: Request, res: Response<Category[]>) => {
     const result = await db.query(`
         SELECT *
         FROM categories
@@ -42,21 +44,21 @@ const categoriesGet = async (req, res) => {
         `
     );
 
-    res.status(200).json(result.rows);
+    res.status(200).json(result.rows as Category[]);
 }
 
-const categoryDelete = async (req, res) => {
+const categoryDelete = async (req: Request<{ id: string }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
 
     await db.query(`
         DELETE FROM categories
         WHERE id = $1;
         `, [id]);
-    
+
     res.status(200).json({ message: 'Category deleted' });
 }
 
-const categoryPost = async (req, res) => {
+const categoryPost = async (req: Request<{ id: string }, {}, { name?: string }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
     const { name } = req.body;
 
@@ -78,14 +80,14 @@ const categoryPost = async (req, res) => {
             if (err.code === '23505') {
                 return res.status(400).json({ message: 'Category already exists' });
             }
-            
+
             return res.status(400).json({ message: 'Bad Request' });
         });
-    
+
     res.status(200).json({ message: 'User deleted' });
 }
 
-const newCategoryPost = async (req, res) => {
+const newCategoryPost = async (req: Request<{}, {}, { name?: string }>, res: Response<{ message: string, id?: any }>) => {
     const { name } = req.body;
 
     if (!name) {
@@ -96,7 +98,7 @@ const newCategoryPost = async (req, res) => {
 
     try {
         await client.query(`BEGIN`);
-        
+
         const recipe_result = await client.query(`
             INSERT INTO categories (name)
             VALUES ($1)
@@ -113,12 +115,14 @@ const newCategoryPost = async (req, res) => {
 
         console.error(err);
 
-        if (err.code === '22001') {
+        if (err instanceof DatabaseError) {
+            if (err.code === '22001') {
                 return res.status(400).json({ message: 'Name too long' });
             }
 
-        if (err.code === '23505') {
-            return res.status(400).json({ message: 'Category already exists' });
+            if (err.code === '23505') {
+                return res.status(400).json({ message: 'Category already exists' });
+            }
         }
 
         res.status(500).json({
@@ -130,16 +134,16 @@ const newCategoryPost = async (req, res) => {
     }
 }
 
-const newRecipePost = async (req, res) => {
+const newRecipePost = async (req: Request<{}, {}, Recipe>, res: Response<{ message: string, id?: any }>) => {
     const { name, category_id, servings, images, ingredients, steps } = req.body;
 
     if (!name) {
         return res.status(400).json({ message: 'Name must not be empty' });
     }
-    else if (!Array.isArray(ingredients) || ingredients.length === 0) {
+    else if (ingredients.length === 0) {
         return res.status(400).json({ message: 'Ingredients must not be empty' });
     }
-    else if (!Array.isArray(steps) || steps.length === 0) {
+    else if (steps.length === 0) {
         return res.status(400).json({ message: 'Steps must not be empty' });
     }
 
@@ -147,7 +151,7 @@ const newRecipePost = async (req, res) => {
 
     try {
         await client.query(`BEGIN`);
-        
+
         const recipe_result = await client.query(`
             INSERT INTO recipes (name, category_id, servings)
             VALUES ($1, $2, $3)
@@ -198,8 +202,10 @@ const newRecipePost = async (req, res) => {
 
         console.error(err);
 
-        if (err.code === '22001') {
-            return res.status(400).json({ message: 'Too long string submitted' });
+        if (err instanceof DatabaseError) {
+            if (err.code === '22001') {
+                return res.status(400).json({ message: 'Too long string submitted' });
+            }
         }
 
         res.status(500).json({
@@ -211,7 +217,7 @@ const newRecipePost = async (req, res) => {
     }
 }
 
-const recipeDelete = async (req, res) => {
+const recipeDelete = async (req: Request<{ id: string }>, res: Response<{ message: string }>) => {
     const { id } = req.params;
 
     const authorization_result = await db.query(`
@@ -236,7 +242,7 @@ const recipeDelete = async (req, res) => {
     res.status(200).json({ message: 'Recipe deleted' });
 }
 
-const recipeGet = async (req, res) => {
+const recipeGet = async (req: Request<{ id: string }>, res: Response<Recipe | { message: string }>) => {
     const { id } = req.params;
 
     const recipe_data = await db.query(`
@@ -302,14 +308,14 @@ const recipeGet = async (req, res) => {
         "category_id": recipe_data.rows[0].category_id,
         "category_name": recipe_data.rows[0].category_name,
         "servings": recipe_data.rows[0].servings,
-        "role":  recipe_data.rows[0].role,
+        "role": recipe_data.rows[0].role,
         "images": images_data.rows,
         "ingredients": ingredients_data.rows,
         "steps": steps_data.rows
     });
 }
 
-const recipePost = async (req, res) => {
+const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Response<{ message: string, id?: any }>) => {
     const { id } = req.params;
     const { name, category_id, servings, images, ingredients, steps } = req.body;
 
@@ -339,7 +345,7 @@ const recipePost = async (req, res) => {
 
     try {
         await client.query(`BEGIN`);
-        
+
         await client.query(`
             UPDATE recipes
             SET
@@ -348,30 +354,30 @@ const recipePost = async (req, res) => {
                 servings = $4
             WHERE id = $1;
             `, [id, name, category_id ?? null, servings ?? null]);
-        
+
         if (images.length === 0) {
             await client.query(`
                 DELETE FROM recipe_images
                 WHERE recipe_id = $1;
                 `, [id]);
 
-                await fs.rm(`${uploadDir}/recipe-${id}`, { recursive: true, force: true });
+            await fs.rm(`${uploadDir}/recipe-${id}`, { recursive: true, force: true });
         } else {
             const image_response = await client.query(`
                 DELETE FROM recipe_images
                 WHERE recipe_id = $1
                     AND id <> ALL($2::int[])
                 RETURNING slot;
-                `, [id, images.filter(image => Number.isInteger(image.id)).map(image => {return image.id})]);
+                `, [id, images.filter(image => Number.isInteger(image.id)).map(image => { return image.id })]);
 
-            const deleted_files = image_response.rows.map(file => {return `${file.slot}.webp`});
+            const deleted_files = image_response.rows.map(file => { return `${file.slot}.webp` });
 
             for (const file of deleted_files) {
                 await fs.rm(`${uploadDir}/recipe-${id}/${file}`, { recursive: true, force: true });
             }
-            
+
             await Promise.all(
-                images.filter(image => {return Number.isInteger(image.id)}).map(image =>
+                images.filter(image => { return Number.isInteger(image.id) }).map(image =>
                     client.query(`
                         UPDATE recipe_images
                         SET
@@ -383,7 +389,7 @@ const recipePost = async (req, res) => {
             );
 
             await Promise.all(
-                images.filter(image => {return !Number.isInteger(image.id)}).map(image =>
+                images.filter(image => { return !Number.isInteger(image.id) }).map(image =>
                     client.query(`
                         INSERT INTO recipe_images (recipe_id, slot, caption)
                         VALUES ($1, $2, $3)
@@ -397,10 +403,10 @@ const recipePost = async (req, res) => {
             DELETE FROM ingredients
             WHERE recipe_id = $1
                 AND id <> ALL($2::int[]);
-            `, [id, ingredients.map(ingredient => {return ingredient.id})]);
+            `, [id, ingredients.map(ingredient => { return ingredient.id })]);
 
         await Promise.all(
-            ingredients.filter(ingredient => {return Number.isInteger(ingredient.id)}).map(ingredient =>
+            ingredients.filter(ingredient => { return Number.isInteger(ingredient.id) }).map(ingredient =>
                 client.query(`
                     UPDATE ingredients
                     SET
@@ -415,7 +421,7 @@ const recipePost = async (req, res) => {
         );
 
         await Promise.all(
-            ingredients.filter(ingredient => {return !Number.isInteger(ingredient.id)}).map(ingredient =>
+            ingredients.filter(ingredient => { return !Number.isInteger(ingredient.id) }).map(ingredient =>
                 client.query(`
                     INSERT INTO ingredients (recipe_id, index_number, amount, unit, text, comment)
                     VALUES ($1, $2, $3, $4, $5, $6);
@@ -427,10 +433,10 @@ const recipePost = async (req, res) => {
             DELETE FROM steps
             WHERE recipe_id = $1
                 AND id <> ALL($2::int[]);
-            `, [id, steps.map(step => {return step.id})]);
+            `, [id, steps.map(step => { return step.id })]);
 
         await Promise.all(
-            steps.filter(step => {return Number.isInteger(step.id)}).map(step =>
+            steps.filter(step => { return Number.isInteger(step.id) }).map(step =>
                 client.query(`
                     UPDATE steps
                     SET
@@ -442,7 +448,7 @@ const recipePost = async (req, res) => {
         );
 
         await Promise.all(
-            steps.filter(step => {return !Number.isInteger(step.id)}).map(step =>
+            steps.filter(step => { return !Number.isInteger(step.id) }).map(step =>
                 client.query(`
                     INSERT INTO steps (recipe_id, index_number, text)
                     VALUES ($1, $2, $3);
@@ -458,8 +464,10 @@ const recipePost = async (req, res) => {
 
         console.error(err);
 
-        if (err.code === '22001') {
-            return res.status(400).json({ message: 'Too long string submitted' });
+        if (err instanceof DatabaseError) {
+            if (err.code === '22001') {
+                return res.status(400).json({ message: 'Too long string submitted' });
+            }
         }
 
         res.status(500).json({
@@ -471,7 +479,7 @@ const recipePost = async (req, res) => {
     }
 }
 
-const recipeShareGet = async (req, res) => {
+const recipeShareGet = async (req: Request<{ id: string }>, res: Response<UserSimplified[] | { message: string }>) => {
     const { id } = req.params;
 
     const authorization_result = await db.query(`
@@ -494,11 +502,11 @@ const recipeShareGet = async (req, res) => {
         [id, req.session.apiKeyId]
     );
 
-    res.status(200).json(result.rows);
+    res.status(200).json(result.rows as UserSimplified[]);
 }
 
-const recipeSharePost = async (req, res) => {
-    const { recipe_id, selected_users, removed_users } = req.body;
+const recipeSharePost = async (req: Request<{ id: string }, {}, { selected_users: UserSimplified[], removed_users: UserSimplified[] }>, res: Response<{ message: string }>) => {
+    const { selected_users, removed_users } = req.body;
     const { id } = req.params;
 
     const authorization_result = await db.query(`
@@ -524,7 +532,7 @@ const recipeSharePost = async (req, res) => {
                     INSERT INTO access_permissions (key_id, recipe_id)
                     VALUES ($1, $2)
                     ON CONFLICT DO NOTHING;
-                `, [user, recipe_id])
+                `, [user, id])
             )
         );
 
@@ -533,10 +541,10 @@ const recipeSharePost = async (req, res) => {
                 client.query(`
                     DELETE FROM access_permissions
                     WHERE key_id = $1 AND recipe_id = $2;
-                `, [user, recipe_id])
+                `, [user, id])
             )
         );
-        
+
         await client.query('COMMIT');
 
         res.status(201).json({ message: 'Shared with users successfully' });
@@ -554,4 +562,4 @@ const recipeSharePost = async (req, res) => {
     }
 }
 
-export default {allRecipesGet, categoriesGet, categoryDelete, categoryPost, newCategoryPost, newRecipePost, recipeDelete, recipeGet, recipePost, recipeShareGet, recipeSharePost}
+export default { allRecipesGet, categoriesGet, categoryDelete, categoryPost, newCategoryPost, newRecipePost, recipeDelete, recipeGet, recipePost, recipeShareGet, recipeSharePost }
