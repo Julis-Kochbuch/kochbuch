@@ -11,7 +11,8 @@ COPY backend/package*.json ./backend/
 RUN npm ci
 
 COPY common ./common
-COPY backend ./backend
+COPY --exclude=src/uploads backend ./backend
+COPY backend/src/uploads ./uploads
 
 RUN npm run build -w @kochbuch/common
 
