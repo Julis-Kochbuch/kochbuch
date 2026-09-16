@@ -22,6 +22,8 @@ console.log("Server starting...");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(rateLimit(rateLimitConfig));
 
 app.use(cors(corsConfig));
