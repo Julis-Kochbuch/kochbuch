@@ -1,4 +1,6 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit'
+import rateLimitConfig from './config/rateLimit.js';
 import cors from 'cors';
 import corsConfig from './config/cors.js';
 import session from 'express-session';
@@ -19,6 +21,8 @@ const sessionSecret = fs
 console.log("Server starting...");
 
 const app = express();
+
+app.use(rateLimit(rateLimitConfig));
 
 app.use(cors(corsConfig));
 
