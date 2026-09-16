@@ -2,7 +2,7 @@ import { DatabaseError, Pool } from 'pg';
 import fs from "node:fs";
 
 const pgPassword = fs
-    .readFileSync("/run/secrets/pg_pw_admin", "utf8")
+    .readFileSync("/run/secrets/pg_pw_backend", "utf8")
     .trim();
 
 export const pool = new Pool({

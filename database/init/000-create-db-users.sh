@@ -20,4 +20,4 @@ CREATE ROLE :"app_username"
 EOSQL
 }
 
-# create_role "backend" "pg_pw_backend"
+create_role "backend" "pg_pw_backend"

@@ -12,6 +12,12 @@ import uploadsRoutes from './routes/uploadsRoutes.js';
 
 import { checkThemes } from './utils/checkThemes.js';
 
+const sessionSecret = fs
+    .readFileSync("/run/secrets/session_secret", "utf8")
+    .trim();
+
+console.log("Server starting...");
+
 const app = express();
 
 app.use(cors(corsConfig));
@@ -20,13 +26,13 @@ app.use(express.json());
 
 app.use(
     session({
-        secret: 'super-secret-key', // SPÄTER ÄNDERN => beim Containerbau env file generieren lassen
+        secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: false, // SPÄTER AUF TRUE SETZEN
-            sameSite: 'lax' // SPÄTER ÄNDERN
+            secure: process.env.MODE === "prod",
+            sameSite: 'lax'
         }
     })
 );
@@ -46,8 +52,6 @@ await waitPort({
     port: 5432,
     timeout: 10000,
     waitForDns: true,
-}).then(() => {
-    console.log(`Connected to database`)
 });
 
 checkThemes();

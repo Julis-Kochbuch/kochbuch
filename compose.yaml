@@ -23,11 +23,11 @@ services:
     build: ./database
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_admin
       POSTGRES_DB: kochbuch
     secrets:
       - pg_pw_admin
+      - pg_pw_backend
       - kochbuch_pw_admin
     volumes:
       - postgres_data:/var/lib/postgresql
@@ -43,8 +43,7 @@ services:
     environment:
       CHOKIDAR_USEPOLLING: true
       DATABASE_HOST: db
-      DATABASE_USER: user
-      DATABASE_PASSWORD: password
+      DATABASE_USER: backend
       DATABASE_DB: kochbuch
       HOSTNAME: ${HOSTNAME:?}
       PORT: 5001
@@ -52,7 +51,7 @@ services:
       HTTPS_PROXY_PORT: ${HTTPS_PORT}
       MODE: prod
     secrets:
-      - pg_pw_admin
+      - pg_pw_backend
       - session_secret
     volumes:
       - uploads:/app/uploads
@@ -87,6 +86,8 @@ services:
 secrets:
   pg_pw_admin:
     file: ./secrets/pg_pw_admin
+  pg_pw_backend:
+    file: ./secrets/pg_pw_backend
   kochbuch_pw_admin:
     file: ./secrets/kochbuch_pw_admin
   session_secret:
