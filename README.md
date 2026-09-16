@@ -44,5 +44,6 @@ You have to provide secrets (passwords) to Docker. Here's how to do it:
 
 > [!NOTE]  
 > The content of `kochbuch_pw_admin` will be the password you use when first logging in as user `admin`.
+
 > [!IMPORTANT]  
 > The file names must exactly match the respective file name. They must not have any file ending!
