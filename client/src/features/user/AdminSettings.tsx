@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { type UserApi } from '../../utils/ApiTypes';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
+import backendAddress from '../../utils/BackendAddress';
 
 const AdminSettings = () => {
     const globalState = useGlobalState();
@@ -17,7 +18,7 @@ const AdminSettings = () => {
     const [adminPassword, setAdminPassword] = useState<string>("");
     const [creatingUser, setCreatingUser] = useState<boolean>(false);
     const [changingPassword, setChangingPassword] = useState<number>();
-    
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -27,7 +28,7 @@ const AdminSettings = () => {
             setError("");
 
             try {
-                const response = await fetch("http://localhost/api/user", {
+                const response = await fetch(`${backendAddress}/user`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -37,7 +38,7 @@ const AdminSettings = () => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching users failed");
                 }
-                
+
                 setUsers(data as UserApi[]);
             } catch (err) {
                 const message =
@@ -58,12 +59,12 @@ const AdminSettings = () => {
         try {
             setDeleting(undefined);
             globalStateDispatch({ type: "close modal" });
-            
+
             if (userId === globalState.user?.id) {
                 throw new Error("You cannot delete your own user here. Go to Settings -> User");
             }
 
-            const response = await fetch("http://localhost/api/user/" + userId, {
+            const response = await fetch(`${backendAddress}/user/${userId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -80,7 +81,7 @@ const AdminSettings = () => {
                 throw new Error(data.error || data.message || "Deleting user failed");
             }
 
-            setUsers(items => 
+            setUsers(items =>
                 items.filter((_, i) => i !== index)
             );
             if (globalState.user.id === userId) {
@@ -103,7 +104,7 @@ const AdminSettings = () => {
             setLoading(false);
         }
     }
-    
+
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, userId: number, index: number) => {
         e.preventDefault();
         setLoading(true);
@@ -121,7 +122,7 @@ const AdminSettings = () => {
                 throw new Error("Role must not be undefined");
             }
 
-            const response = await fetch("http://localhost/api/user/" + userId, {
+            const response = await fetch(`${backendAddress}/user/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -185,7 +186,7 @@ const AdminSettings = () => {
                 throw new Error("Password must not be empty");
             }
 
-            const response = await fetch("http://localhost/api/user", {
+            const response = await fetch(`${backendAddress}/user`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -239,7 +240,7 @@ const AdminSettings = () => {
                 throw new Error("Password must not be empty");
             }
 
-            const response = await fetch("http://localhost/api/user/" + userId, {
+            const response = await fetch(`${backendAddress}/user/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -319,7 +320,7 @@ const AdminSettings = () => {
                                     <button type='submit' aria-label='Save'></button>
                                 </div>
                             </form>
-                        :
+                            :
                             <>
                                 <div className='user__name' aria-labelledby='username'>{user.name}</div>
                                 <div className='user__role' aria-labelledby='role'>{user.role}</div>
@@ -347,8 +348,8 @@ const AdminSettings = () => {
                                         setChangingPassword(undefined);
                                         globalStateDispatch({ type: "open modal" });
                                     }}></button>
-                                </div> 
-                            </> 
+                                </div>
+                            </>
                         }
                     </li>
                 ))}
@@ -360,14 +361,14 @@ const AdminSettings = () => {
                         <h2>Warning</h2>
                         <p>Are you sure you want to delete user {users[deleting].name}? This is not reversible!</p>
                         <form className='settings__content' id='password-form' onSubmit={(e) => handleDelete(e, users[deleting].id, deleting)}>
-                        <label htmlFor="password">Your password:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                            required
-                        />
+                            <label htmlFor="password">Your password:</label>
+                            <input
+                                type="password"
+                                id="password"
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                required
+                            />
                         </form>
                         {error && <p>{error}</p>}
                         <div className='modal__controls'>
@@ -386,22 +387,22 @@ const AdminSettings = () => {
                     }}>
                         <h2>Change {users[changingPassword].name}s Password</h2>
                         <form className='settings__content' id='change-password-form' onSubmit={(e) => handleChangingPassword(e, users[changingPassword].id, changingPassword)}>
-                        <label htmlFor="new-password">New password:</label>
-                        <input
-                            type="password"
-                            id="new-password"
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                            required
-                        />
-                        <label htmlFor="admin-password">Your password:</label>
-                        <input
-                            type="password"
-                            id="admin-password"
-                            onChange={(e) => setAdminPassword(e.target.value)}
-                            value={adminPassword}
-                            required
-                        />
+                            <label htmlFor="new-password">New password:</label>
+                            <input
+                                type="password"
+                                id="new-password"
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                required
+                            />
+                            <label htmlFor="admin-password">Your password:</label>
+                            <input
+                                type="password"
+                                id="admin-password"
+                                onChange={(e) => setAdminPassword(e.target.value)}
+                                value={adminPassword}
+                                required
+                            />
                         </form>
                         {error && <p>{error}</p>}
                         <div className='modal__controls'>

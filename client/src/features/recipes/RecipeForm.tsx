@@ -15,6 +15,7 @@ import { useGlobalState } from '../../utils/GlobalState.js';
 import { type Category } from './CategorySelector';
 import BackButton from '../../components/BackButton.js';
 import ImageForm, { type Image } from './ImageForm.js';
+import backendAddress from '../../utils/BackendAddress.js';
 
 import '../../assets/css/recipe.css';
 
@@ -32,12 +33,12 @@ const RecipeForm = () => {
     useEffect(() => {
         if (recipe) {
             setName(recipe.name);
-            setCategory({id: recipe.category_id ? recipe.category_id : undefined, name: recipe.category_name ? recipe.category_name : ""});
+            setCategory({ id: recipe.category_id ? recipe.category_id : undefined, name: recipe.category_name ? recipe.category_name : "" });
             setServings(recipe.servings ? recipe.servings.toString() : undefined);
             setIngredients(recipe.ingredients.map((ingredient): Ingredient => ({
                 id: ingredient.id ?? Date.now(),
                 apiId: ingredient.id,
-                amount: ingredient.amount ? new Fraction(ingredient.amount): undefined,
+                amount: ingredient.amount ? new Fraction(ingredient.amount) : undefined,
                 unit: ingredient.unit,
                 text: ingredient.text,
                 comment: ingredient.comment
@@ -51,7 +52,7 @@ const RecipeForm = () => {
                 id: image.id ?? Date.now(),
                 apiId: image.id,
                 slot: image.slot,
-                url: recipe.id ? "/api/uploads/recipe/" + recipe.id + "/" + image.slot + ".webp" : undefined,
+                url: recipe.id ? `/api/uploads/recipe/${recipe.id}/${image.slot}.webp` : undefined,
                 caption: image.caption,
                 fileWasChanged: false
             })));
@@ -69,7 +70,7 @@ const RecipeForm = () => {
             author: recipe?.author,
 
             images:
-                images.filter(image => {return image.url ? true : false}).map((image): ImageApi => ({
+                images.filter(image => { return image.url ? true : false }).map((image): ImageApi => ({
                     id: image.apiId,
                     slot: image.slot,
                     caption: image.caption,
@@ -89,7 +90,7 @@ const RecipeForm = () => {
                     index_number: index,
                     text: step.text,
                 }))
-            }
+        }
     }
 
     const handleImagesSubmit = async (recipeId: string) => {
@@ -106,7 +107,7 @@ const RecipeForm = () => {
                 formData.append("slots", image.slot.toString())
             })
 
-            const response = await fetch("http://localhost/api/uploads/recipe/" + recipeId, {
+            const response = await fetch(`${backendAddress}/uploads/recipe/${recipeId}`, {
                 method: "POST",
                 credentials: "include",
                 body: formData
@@ -153,9 +154,9 @@ const RecipeForm = () => {
                         />
                     </div>
                     <ImageForm
-                        index={images.findIndex(image => {return image.slot === 0})}
+                        index={images.findIndex(image => { return image.slot === 0 })}
                         slot={0}
-                        value={images[images.findIndex(image => {return image.slot === 0})]}
+                        value={images[images.findIndex(image => { return image.slot === 0 })]}
                         setAction={setImages}
                     />
                     <div className='recipe-category'>
@@ -253,15 +254,15 @@ const RecipeForm = () => {
                     />
                 </div>
                 <ImageForm
-                    index={images.findIndex(image => {return image.slot === 1})}
+                    index={images.findIndex(image => { return image.slot === 1 })}
                     slot={1}
-                    value={images[images.findIndex(image => {return image.slot === 1})]}
+                    value={images[images.findIndex(image => { return image.slot === 1 })]}
                     setAction={setImages}
                 />
                 <ImageForm
-                    index={images.findIndex(image => {return image.slot === 2})}
+                    index={images.findIndex(image => { return image.slot === 2 })}
                     slot={2}
-                    value={images[images.findIndex(image => {return image.slot === 2})]}
+                    value={images[images.findIndex(image => { return image.slot === 2 })]}
                     setAction={setImages}
                 />
                 <div className='input-recipe-group-footer'>

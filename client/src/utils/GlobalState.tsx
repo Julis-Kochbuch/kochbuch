@@ -1,5 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, type ActionDispatch, type JSX, type RefObject } from 'react';
 
+import backendAddress from './BackendAddress';
+
 type GlobalState = {
     authStatus: "loading" | "authenticated" | "unauthenticated";
     user: {
@@ -23,7 +25,7 @@ type GlobalStateReducerAction =
         type: "set user data",
         id?: number,
         name?: string,
-        role?: number, 
+        role?: number,
         settingThemeSlug?: string,
         settingAdvancedOptions?: boolean
     }
@@ -140,7 +142,7 @@ type GlobalStateProviderProps = {
 };
 
 export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
-    const [globalState, dispatchGlobalState] = useReducer(globalStateReducer, {authStatus: "loading", modalsOpen: 0} as GlobalState);
+    const [globalState, dispatchGlobalState] = useReducer(globalStateReducer, { authStatus: "loading", modalsOpen: 0 } as GlobalState);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -150,7 +152,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                     authStatus: "loading"
                 });
 
-                const response = await fetch("http://localhost/api/user/me", {
+                const response = await fetch(`${backendAddress}/user/me`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -181,7 +183,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                     setting_theme_slug?: string;
                     setting_advanced_options: boolean;
                 };
-                
+
                 dispatchGlobalState({
                     type: "set user data",
                     id: userData.id,

@@ -3,6 +3,7 @@ import { Navigate } from 'react-router';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
+import backendAddress from '../../utils/BackendAddress';
 
 import '../../assets/css/login.css'
 
@@ -26,7 +27,7 @@ const Login = () => {
                 authStatus: "loading"
             });
 
-            const response = await fetch("http://localhost/api/auth/login", {
+            const response = await fetch(`${backendAddress}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -50,7 +51,7 @@ const Login = () => {
                 authStatus: "authenticated"
             })
 
-            const userResponse = await fetch("http://localhost/api/user/me", {
+            const userResponse = await fetch(`${backendAddress}/user/me`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -68,7 +69,7 @@ const Login = () => {
                 setting_theme_slug?: string;
                 setting_advanced_options: boolean;
             };
-            
+
             dispatchGlobalState({
                 type: "set user data",
                 id: userData.id,
@@ -89,7 +90,7 @@ const Login = () => {
     return (
         globalState.authStatus === "authenticated" ?
             <Navigate to="/overview" replace />
-        :
+            :
             <>
                 <form onSubmit={handleSubmit} className='login-form' id='login-form'>
                     <fieldset disabled={(error || loading) ? true : false}>

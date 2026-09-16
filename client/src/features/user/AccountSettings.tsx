@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import SaveButton from '../../components/SaveButton';
+import backendAddress from '../../utils/BackendAddress';
 
 const AccountSettings = () => {
     const globalState = useGlobalState();
@@ -21,7 +22,7 @@ const AccountSettings = () => {
         setError("");
 
         try {
-            const response = await fetch("http://localhost/api/user/me", {
+            const response = await fetch(`${backendAddress}/user/me`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -65,9 +66,9 @@ const AccountSettings = () => {
                 <>
                     <SaveButton form='account-settings' />
                 </>,
-            globalState.refs.headerMain.current)}
+                globalState.refs.headerMain.current)}
             <form id='account-settings' onSubmit={handleSubmit}>
-                { error && (<p className='error-inline'>{error}</p>)}
+                {error && (<p className='error-inline'>{error}</p>)}
                 <fieldset className='settings__content' disabled={loading}>
                     <label htmlFor="username">Change Username:</label>
                     <input

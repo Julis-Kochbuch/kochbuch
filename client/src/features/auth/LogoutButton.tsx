@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
+import backendAddress from '../../utils/BackendAddress';
 
 type LogoutButtonProps =
     Omit<
@@ -13,14 +14,14 @@ type LogoutButtonProps =
 const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
-    
+
     const [loading, setLoading] = useState(false);
 
     const handleClick = async () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost/api/auth/logout" , {
+            const response = await fetch(`${backendAddress}/auth/logout`, {
                 method: "POST",
                 credentials: "include"
             });
@@ -49,7 +50,7 @@ const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
     }
 
     return (
-        <button 
+        <button
             type="button"
             onClick={handleClick}
             disabled={loading || props.disabled || globalState.modalsOpen > 0}

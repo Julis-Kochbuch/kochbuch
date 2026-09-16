@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import SaveButton from '../../components/SaveButton';
 import { type ThemeApi } from '../../utils/ApiTypes';
+import backendAddress from '../../utils/BackendAddress';
 
 const GeneralSettings = () => {
     const globalState = useGlobalState();
@@ -11,7 +12,7 @@ const GeneralSettings = () => {
 
     const [themes, setThemes] = useState<ThemeApi[]>([]);
     const [theme, setTheme] = useState<ThemeApi>();
-    
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -27,7 +28,7 @@ const GeneralSettings = () => {
             setError("");
 
             try {
-                const response = await fetch("http://localhost/api/user/theme", {
+                const response = await fetch(`${backendAddress}/user/theme`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -37,7 +38,7 @@ const GeneralSettings = () => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching themes failed");
                 }
-                
+
                 setThemes(data.themes as ThemeApi[]);
             } catch (err) {
                 const message =
@@ -57,8 +58,8 @@ const GeneralSettings = () => {
 
         try {
             if (!theme?.slug) return;
-            
-            const response = await fetch("http://localhost/api/user/theme", {
+
+            const response = await fetch(`${backendAddress}/user/theme`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -92,9 +93,9 @@ const GeneralSettings = () => {
                 <>
                     <SaveButton form='general-settings' />
                 </>,
-            globalState.refs.headerMain.current)}
+                globalState.refs.headerMain.current)}
             <form id='general-settings' onSubmit={handleSubmit}>
-                { error && (<div className='error-inline'>{error}</div>)}
+                {error && (<div className='error-inline'>{error}</div>)}
                 <fieldset className='settings__content' disabled={loading}>
                     <label id='theme-label' htmlFor="theme">Select Theme:</label>
                     <select
@@ -108,7 +109,7 @@ const GeneralSettings = () => {
                         required
                     >
                         {
-                            themes.map((theme, index) => (
+                            (themes ?? []).map((theme, index) => (
                                 <option key={index} value={theme.slug}>
                                     {theme.slug}
                                 </option>

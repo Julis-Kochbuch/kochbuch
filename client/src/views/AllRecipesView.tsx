@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { type RecipeListByCategoryApi } from '../utils/ApiTypes';
 import Modal from '../components/Modal';
+import backendAddress from '../utils/BackendAddress';
 
 import '../assets/css/recipe-list.css';
 
@@ -17,7 +18,7 @@ const RecipeView = () => {
             setError("");
 
             try {
-                const response = await fetch("http://localhost/api/recipe/", {
+                const response = await fetch(`${backendAddress}/recipe/`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -27,7 +28,7 @@ const RecipeView = () => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching recipes failed");
                 }
-                
+
                 setCategories(data as RecipeListByCategoryApi[]);
             } catch (err) {
                 const message =

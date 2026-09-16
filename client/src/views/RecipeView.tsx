@@ -6,6 +6,7 @@ import { type RecipeApi } from '../utils/ApiTypes';
 import BackButton from '../components/BackButton';
 import { useGlobalState } from '../utils/GlobalState';
 import Modal from '../components/Modal';
+import backendAddress from '../utils/BackendAddress';
 
 export type RecipeOutletContext = {
     recipe?: RecipeApi;
@@ -31,7 +32,7 @@ const RecipeView = () => {
             setError("");
 
             try {
-                const response = await fetch("http://localhost/api/recipe/" + recipeId, {
+                const response = await fetch(`${backendAddress}/recipe/${recipeId}`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -41,7 +42,7 @@ const RecipeView = () => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching recipe failed");
                 }
-                
+
                 setRecipe(data as RecipeApi);
             } catch (err) {
                 const message =
@@ -64,7 +65,7 @@ const RecipeView = () => {
                 throw new Error("Modifying recipe failed");
             }
 
-            const response = await fetch("http://localhost/api/recipe/" + recipeId, {
+            const response = await fetch(`${backendAddress}/recipe/${recipeId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -97,8 +98,8 @@ const RecipeView = () => {
                 <>
                     <BackButton />
                 </>,
-            globalState.refs.headerMain.current)}
-            <Outlet context={{ recipe: recipe, disabled: loading, onFormSubmit: handleSubmit} satisfies RecipeOutletContext} />
+                globalState.refs.headerMain.current)}
+            <Outlet context={{ recipe: recipe, disabled: loading, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
                     <h2>Error</h2>
@@ -106,7 +107,7 @@ const RecipeView = () => {
                     <button type='button' onClick={() => setError("")}>OK</button>
                 </Modal>
             }
-        </>      
+        </>
     )
 }
 

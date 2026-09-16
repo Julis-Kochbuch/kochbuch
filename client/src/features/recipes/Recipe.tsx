@@ -6,6 +6,7 @@ import { type RecipeOutletContext } from '../../views/RecipeView.js';
 import ShareButton from './ShareButton.js';
 import { useGlobalState } from '../../utils/GlobalState.js';
 import RecipeImage from './RecipeImage.js';
+import backendAddress from '../../utils/BackendAddress.js';
 
 const Recipe = () => {
     const { recipe } = useOutletContext<RecipeOutletContext>()
@@ -18,7 +19,7 @@ const Recipe = () => {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch("http://localhost/api/recipe/" + recipe?.id, {
+            const response = await fetch(`${backendAddress}/recipe/${recipe?.id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -36,7 +37,7 @@ const Recipe = () => {
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
-            
+
             throw new Error(message);
         }
     }
@@ -46,7 +47,7 @@ const Recipe = () => {
             setServings(recipe?.servings ?? 1)
         }
     }, [recipe]);
-    
+
     return (
         <div className='recipe'>
             {globalState.refs?.headerMenu?.current && createPortal(
@@ -67,7 +68,7 @@ const Recipe = () => {
                         <Link to="edit" tabIndex={-1}><button type='button' disabled={globalState.modalsOpen > 0}>Edit</button></Link>
                     }
                 </>,
-            globalState.refs.headerMenu.current)
+                globalState.refs.headerMenu.current)
             }
             <div className='recipe-group-head'>
                 <h1 className='recipe-name'>
@@ -118,7 +119,7 @@ const Recipe = () => {
                             />
                             <li>
                                 <label className='recipe-step__content' htmlFor={'step-' + step.id?.toString()}>
-                            <span className='checkbox'></span>
+                                    <span className='checkbox'></span>
                                     <div className='recipe-step-index'>
                                         {index + 1}
                                     </div>

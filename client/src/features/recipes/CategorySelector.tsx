@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import AddButton from '../../components/AddButton';
+import backendAddress from '../../utils/BackendAddress';
 
 import '../../assets/css/category-selector.css';
 
@@ -19,7 +20,7 @@ type CategorySelectorProps = {
 const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
     const globalState = useGlobalState();
     const globalStateDispatch = useGlobalStateDispatch();
-    
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [newCategory, setNewCategory] = useState<string>("");
     const [edittingCategories, setEdittingCategories] = useState(false);
@@ -32,7 +33,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("http://localhost/api/recipe/categories", {
+                const response = await fetch(`${backendAddress}/recipe/categories`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -42,7 +43,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching categories failed");
                 }
-                
+
                 setCategories(data as Category[]);
             } catch (err) {
                 const message =
@@ -66,9 +67,9 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
             let requestInfo = "" as RequestInfo;
 
             if (categoryId === undefined) {
-                requestInfo = "http://localhost/api/recipe/categories" as RequestInfo;
+                requestInfo = `${backendAddress}/recipe/categories` as RequestInfo;
             } else {
-                requestInfo = "http://localhost/api/recipe/categories/" + categoryId as RequestInfo;
+                requestInfo = `${backendAddress}/recipe/categories/${categoryId}` as RequestInfo;
             }
 
             const response = await fetch(requestInfo, {
@@ -122,7 +123,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                 throw new Error("Error occured while selecting category to be deleted");
             }
 
-            const response = await fetch("http://localhost/api/recipe/categories/" + categoryId, {
+            const response = await fetch(`${backendAddress}/recipe/categories/` + categoryId, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
@@ -136,7 +137,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                 throw new Error(data.error || data.message || "Deleting category failed");
             }
 
-            setCategories(items => 
+            setCategories(items =>
                 items.filter((_, i) => i !== index)
             );
         } catch (err) {
@@ -216,7 +217,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                                             <button type='submit' form='category-form' aria-label='Save'></button>
                                         </div>
                                     </form>
-                                :
+                                    :
                                     <>
                                         <div className='category__name'>{category.name}</div>
                                         <div className='category__controls'>

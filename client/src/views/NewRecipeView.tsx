@@ -7,6 +7,7 @@ import { type RecipeOutletContext } from './RecipeView.js';
 import BackButton from '../components/BackButton';
 import { useGlobalState } from '../utils/GlobalState.js';
 import Modal from '../components/Modal.js';
+import backendAddress from '../utils/BackendAddress.js';
 
 const NewRecipeView = () => {
     const globalState = useGlobalState();
@@ -24,7 +25,7 @@ const NewRecipeView = () => {
         let id: string | undefined = undefined;
 
         try {
-            const response = await fetch("http://localhost/api/recipe/", {
+            const response = await fetch(`${backendAddress}/recipe/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -40,7 +41,7 @@ const NewRecipeView = () => {
             }
 
             id = data.id
-            navigate({pathname: "/recipe/" + data.id}, {replace: true});
+            navigate({ pathname: "/recipe/" + data.id }, { replace: true });
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
@@ -57,7 +58,7 @@ const NewRecipeView = () => {
                 <>
                     <BackButton />
                 </>,
-            globalState.refs.headerMain.current)}
+                globalState.refs.headerMain.current)}
             <Outlet
                 context={{
                     recipe: {
@@ -66,14 +67,14 @@ const NewRecipeView = () => {
                         servings: 1,
                         author: globalState.user.name,
                         images: [],
-                        ingredients: [{index_number: 0, amount: 500, unit:"g", text:"Flour"}],
-                        steps: [{index_number: 0, text:"In a bowl, mix the flour and the salt"}]
+                        ingredients: [{ index_number: 0, amount: 500, unit: "g", text: "Flour" }],
+                        steps: [{ index_number: 0, text: "In a bowl, mix the flour and the salt" }]
                     },
                     disabled: loading,
                     onFormSubmit: handleSubmit
                 } satisfies RecipeOutletContext}
             />
-            { error &&
+            {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
                     <h2>Error</h2>
                     <p>{error}</p>

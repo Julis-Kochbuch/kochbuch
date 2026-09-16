@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Modal from '../../components/Modal';
 import { type ShareableUserApi, type ShareableUserListApi } from '../../utils/ApiTypes'
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
+import backendAddress from '../../utils/BackendAddress';
 
 type ShareButtonProps = {
     recipeId: number | string;
@@ -48,10 +49,10 @@ const UserCheckbox = ({ selectedUsersHook, removedUsersHook, user, disabled }: U
 const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
-    
+
     const [selectedUsers, setSelectedUsers] = useState<Number[]>([]);
     const [removedUsers, setRemovedUsers] = useState<Number[]>([]);
-    const [allUsers, setAllUsers] = useState<ShareableUserListApi>({local: [], foreign: []});
+    const [allUsers, setAllUsers] = useState<ShareableUserListApi>({ local: [], foreign: [] });
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -62,7 +63,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
             setLoading(true);
 
             try {
-                const response = await fetch("http://localhost/api/user/share", {
+                const response = await fetch(`${backendAddress}/user/share`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -72,7 +73,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching users failed");
                 }
-                
+
                 setAllUsers(data as ShareableUserListApi);
             } catch (err) {
                 const message =
@@ -87,7 +88,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
             setLoading(true);
 
             try {
-                const response = await fetch("http://localhost/api/recipe/" + recipeId + "/share", {
+                const response = await fetch(`${backendAddress}/recipe/${recipeId}/share`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -97,7 +98,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching shared users failed");
                 }
-                
+
                 setSelectedUsers(data.map((user: { key_id: number }) => user.key_id))
             } catch (err) {
                 const message =
@@ -124,7 +125,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
         }
 
         try {
-            const response = await fetch("http://localhost/api/recipe/" + recipeId + "/share", {
+            const response = await fetch(`${backendAddress}/recipe/${recipeId}/share`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
