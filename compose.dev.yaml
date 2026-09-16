@@ -6,9 +6,11 @@ services:
     command:
       - --api.insecure=true
       - --providers.docker=true
-      - --entrypoints.web.address=:80
+      - --entrypoints.web.address=:${HTTP_PORT:-80}
+      - --entrypoints.websecure.address=:${HTTPS_PORT:-443}
     ports:
-      - 80:80
+      - ${HTTP_PORT:-80}:${HTTP_PORT:-80}
+      - ${HTTPS_PORT:-443}:${HTTPS_PORT:-443}
       - 8080:8080
 
   # Backend
@@ -21,7 +23,11 @@ services:
         - path: ./backend
           action: sync+restart
           target: /app/backend
+        - path: ./common
+          action: rebuild
         - path: ./backend/package.json
+          action: rebuild
+        - path: ./backend/tsconfig.json
           action: rebuild
     environment:
       MODE: dev
@@ -36,6 +42,8 @@ services:
         - path: ./client
           action: sync
           target: /app/client
+        - path: ./common
+          action: rebuild
         - path: ./client/package.json
           action: rebuild
     labels:

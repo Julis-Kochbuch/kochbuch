@@ -7,13 +7,15 @@ services:
     restart: unless-stopped
     command:
       - --providers.docker=true
-      - --entrypoints.web.address=:80
+      - --entrypoints.web.address=:${HTTP_PORT:-80}
+      - --entrypoints.websecure.address=:${HTTPS_PORT:-443}
     ports:
-      - 80:80
+      - ${HTTP_PORT:-80}:${HTTP_PORT:-80}
+      - ${HTTPS_PORT:-443}:${HTTPS_PORT:-443}
     depends_on:
       - client
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   # Database
 
@@ -46,6 +48,8 @@ services:
       DATABASE_DB: kochbuch
       HOSTNAME: ${HOSTNAME:?}
       PORT: 5001
+      HTTP_PROXY_PORT: ${HTTP_PORT}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT}
       MODE: prod
     secrets:
       - pg_pw_admin
@@ -73,6 +77,8 @@ services:
     environment:
       CHOKIDAR_USEPOLLING: true
       HOSTNAME: ${HOSTNAME:?}
+      HTTP_PROXY_PORT: ${HTTP_PORT}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT}
       MODE: prod
     labels:
       traefik.http.routers.client.rule: "Host(`${HOSTNAME:?}`)"
