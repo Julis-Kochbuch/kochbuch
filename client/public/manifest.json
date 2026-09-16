@@ -1,0 +1,31 @@
+{
+    "short_name": "Kochbuch",
+    "name": "Kochbuch",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "type": "image/png",
+            "sizes": "334x334"
+        }
+    ],
+    "start_url": "/overview",
+    "background_color": "#b19132",
+    "display": "fullscreen",
+    "scope": "/",
+    "theme_color": "#b19132",
+    "description": "Self-hosted cookbook to share recipes with friends and family",
+    "screenshots": [
+        {
+            "src": "/screenshot1.png",
+            "type": "image/png",
+            "sizes": "414x846",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/screenshot2.png",
+            "type": "image/png",
+            "sizes": "1800x900",
+            "form_factor": "wide"
+        }
+    ]
+}
