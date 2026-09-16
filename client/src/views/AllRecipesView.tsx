@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import { type RecipeListByCategoryApi } from '../utils/ApiTypes';
+import { type RecipeListByCategory } from '@kochbuch/common';
 import Modal from '../components/Modal';
 import backendAddress from '../utils/BackendAddress';
 
 import '../assets/css/recipe-list.css';
 
 const RecipeView = () => {
-    const [categories, setCategories] = useState<RecipeListByCategoryApi[]>([]);
+    const [categories, setCategories] = useState<RecipeListByCategory[]>([]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -29,7 +29,7 @@ const RecipeView = () => {
                     throw new Error(data.error || data.message || "Fetching recipes failed");
                 }
 
-                setCategories(data as RecipeListByCategoryApi[]);
+                setCategories(data as RecipeListByCategory[]);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";

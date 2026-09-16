@@ -3,15 +3,15 @@ import { createPortal } from 'react-dom';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import SaveButton from '../../components/SaveButton';
-import { type ThemeApi } from '../../utils/ApiTypes';
+import { type Theme } from '@kochbuch/common';
 import backendAddress from '../../utils/BackendAddress';
 
 const GeneralSettings = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
-    const [themes, setThemes] = useState<ThemeApi[]>([]);
-    const [theme, setTheme] = useState<ThemeApi>();
+    const [themes, setThemes] = useState<Theme[]>([]);
+    const [theme, setTheme] = useState<Theme>();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -39,7 +39,7 @@ const GeneralSettings = () => {
                     throw new Error(data.error || data.message || "Fetching themes failed");
                 }
 
-                setThemes(data.themes as ThemeApi[]);
+                setThemes(data.themes as Theme[]);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";

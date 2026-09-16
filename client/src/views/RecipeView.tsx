@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { Outlet, useParams, useNavigate } from "react-router";
 import { createPortal } from "react-dom";
 
-import { type RecipeApi } from '../utils/ApiTypes';
+import { type Recipe } from '@kochbuch/common';
 import BackButton from '../components/BackButton';
 import { useGlobalState } from '../utils/GlobalState';
 import Modal from '../components/Modal';
 import backendAddress from '../utils/BackendAddress';
 
 export type RecipeOutletContext = {
-    recipe?: RecipeApi;
+    recipe?: Recipe;
     disabled?: boolean;
-    onFormSubmit?: (e: React.SyntheticEvent<HTMLFormElement>, recipe: RecipeApi) => Promise<string>;
+    onFormSubmit?: (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => Promise<string>;
 };
 
 const RecipeView = () => {
@@ -21,7 +21,7 @@ const RecipeView = () => {
 
     const navigate = useNavigate();
 
-    const [recipe, setRecipe] = useState<RecipeApi>();
+    const [recipe, setRecipe] = useState<Recipe>();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -43,7 +43,7 @@ const RecipeView = () => {
                     throw new Error(data.error || data.message || "Fetching recipe failed");
                 }
 
-                setRecipe(data as RecipeApi);
+                setRecipe(data as Recipe);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";
@@ -55,7 +55,7 @@ const RecipeView = () => {
         fetchRecipe();
     }, []);
 
-    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: RecipeApi) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => {
         e.preventDefault();
         setLoading(true);
         setError("");

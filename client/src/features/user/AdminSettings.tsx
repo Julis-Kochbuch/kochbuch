@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { type UserApi } from '../../utils/ApiTypes';
+import { type User } from '@kochbuch/common';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
 import backendAddress from '../../utils/BackendAddress';
@@ -9,7 +9,7 @@ const AdminSettings = () => {
     const globalState = useGlobalState();
     const globalStateDispatch = useGlobalStateDispatch();
 
-    const [users, setUsers] = useState<UserApi[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [currentlyEditting, setCurrentlyEditting] = useState<number>();
     const [name, setName] = useState<string>();
     const [role, setRole] = useState<number>();
@@ -39,7 +39,7 @@ const AdminSettings = () => {
                     throw new Error(data.error || data.message || "Fetching users failed");
                 }
 
-                setUsers(data as UserApi[]);
+                setUsers(data as User[]);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";

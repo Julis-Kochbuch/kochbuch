@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 import * as db from '../db/index.js';
 
-const login = async (req: Request, res: Response) => {
+const login = async (req: Request<{}, {}, { username: string, password: string }>, res: Response<{ message: string }>) => {
     const { username, password } = req.body;
 
     if (req.session.userId) {
@@ -20,12 +20,12 @@ const login = async (req: Request, res: Response) => {
     );
 
     if (!result.rows[0]) {
-        return res.status(400).json({ error: 'User not found' });
+        return res.status(400).json({ message: 'User not found' });
     }
 
     const valid = await bcrypt.compare(password, result.rows[0].password_hash);
     if (!valid) {
-        return res.status(400).json({ error: 'Wrong password' });
+        return res.status(400).json({ message: 'Wrong password' });
     }
 
     req.session.userId = result.rows[0].id;

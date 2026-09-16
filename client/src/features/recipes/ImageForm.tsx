@@ -4,13 +4,13 @@ import type { FieldsetFormProps } from '../../utils/FieldsetFormProps';
 import AddButton from '../../components/AddButton';
 
 type ImageFormProps =
-    Omit<FieldsetFormProps<Image>,
-    "value"> & {
-    value?: Image;
-    slot: number;
-}
+    Omit<FieldsetFormProps<ImageWithFile>,
+        "value"> & {
+            value?: ImageWithFile;
+            slot: number;
+        }
 
-export type Image = {
+export type ImageWithFile = {
     id: number;
     apiId?: number;
     slot: number;
@@ -68,94 +68,94 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
             setError(message);
         }
     }
-    
+
     return (
         (value === undefined) ?
-        <div className={'input-recipe-image__wrapper recipe-image image-' + slot}>
-            <AddButton
-                className='recipe-image__add'
-                createItem={(): Image => ({
-                    id: Date.now(),
-                    slot: slot,
-                    fileWasChanged: false
-                })}
-                setAction={setAction}
-                aria-label='Add image'
-                title='Add image'
-            />  
-        </div>
-        :
-        <div className={'input-recipe-image__wrapper recipe-image image-' + slot}>
-            <div className='input-recipe-image__inner'>
-                <label className='input-recipe-image__image' htmlFor={"image-" + index}>
-                    <input
-                        type="file"
-                        accept='image/png, image/jpeg, image/webp'
-                        id={"image-" + index}
-                        onChange={handleFileChange}
-                    />
-                    {value.url && <img src={value.url} />}
-                </label>
-                <div className='input-recipe-image__controls'>
-                    <button
-                        type='button'
-                        aria-label={((addingCaption) ? "Remove" : "Add") + " caption"}
-                        onClick={() => {
-                            if (addingCaption) {
+            <div className={'input-recipe-image__wrapper recipe-image image-' + slot}>
+                <AddButton
+                    className='recipe-image__add'
+                    createItem={(): ImageWithFile => ({
+                        id: Date.now(),
+                        slot: slot,
+                        fileWasChanged: false
+                    })}
+                    setAction={setAction}
+                    aria-label='Add image'
+                    title='Add image'
+                />
+            </div>
+            :
+            <div className={'input-recipe-image__wrapper recipe-image image-' + slot}>
+                <div className='input-recipe-image__inner'>
+                    <label className='input-recipe-image__image' htmlFor={"image-" + index}>
+                        <input
+                            type="file"
+                            accept='image/png, image/jpeg, image/webp'
+                            id={"image-" + index}
+                            onChange={handleFileChange}
+                        />
+                        {value.url && <img src={value.url} />}
+                    </label>
+                    <div className='input-recipe-image__controls'>
+                        <button
+                            type='button'
+                            aria-label={((addingCaption) ? "Remove" : "Add") + " caption"}
+                            onClick={() => {
+                                if (addingCaption) {
+                                    setAction(prev => {
+                                        const next = [...prev];
+
+                                        next[index] = {
+                                            ...next[index],
+                                            caption: undefined,
+                                        };
+
+                                        return next;
+                                    });
+                                }
+                                setAddingCaption(!addingCaption);
+                            }}
+                        ></button>
+                        <button
+                            type='button'
+                            aria-label='Remove image'
+                            onClick={() => {
+                                setAction(prev => {
+                                    const next = [...prev];
+
+                                    next.splice(index, 1);
+
+                                    return next;
+                                });
+                            }}
+                        ></button>
+                    </div>
+                </div>
+                {error && <div>{error}</div>}
+                {(addingCaption) &&
+                    <>
+                        <label htmlFor={"image-caption-" + index} id={"image-caption-label-" + index}>Caption:</label>
+                        <input
+                            type='text'
+                            aria-labelledby={"image-caption-label-" + index}
+                            className='recipe-image__text'
+                            value={value.caption ?? undefined}
+                            onChange={(e) => {
                                 setAction(prev => {
                                     const next = [...prev];
 
                                     next[index] = {
                                         ...next[index],
-                                        caption: undefined,
+                                        caption: e.target.value,
                                     };
-
+                                    console.log(next[index]);
                                     return next;
                                 });
-                            }
-                            setAddingCaption(!addingCaption);
-                        }}
-                    ></button>
-                    <button
-                        type='button'
-                        aria-label='Remove image'
-                        onClick={() => {
-                            setAction(prev => {
-                                const next = [...prev];
-
-                                next.splice(index, 1);
-
-                                return next;
-                            });
-                        }}
-                    ></button>
-                </div>
+                            }}
+                        />
+                    </>
+                }
             </div>
-            {error && <div>{error}</div>}
-            {(addingCaption) &&
-                <>
-                    <label htmlFor={"image-caption-" + index} id={"image-caption-label-" + index}>Caption:</label>
-                    <input
-                        type='text'
-                        aria-labelledby={"image-caption-label-" + index}
-                        className='recipe-image__text'
-                        value={value.caption ?? undefined}
-                        onChange={(e) => {
-                            setAction(prev => {
-                                const next = [...prev];
-
-                                next[index] = {
-                                    ...next[index],
-                                    caption: e.target.value,
-                                };
-                                console.log(next[index]);
-                                return next;
-                            });
-                        }}
-                    />
-                </>
-            }
-        </div>
     )
 }
 

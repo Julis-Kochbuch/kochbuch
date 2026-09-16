@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { createPortal } from "react-dom";
 
-import { type RecipeApi } from '../utils/ApiTypes';
+import { type Recipe } from '@kochbuch/common';
 import { type RecipeOutletContext } from './RecipeView.js';
 import BackButton from '../components/BackButton';
 import { useGlobalState } from '../utils/GlobalState.js';
@@ -17,7 +17,7 @@ const NewRecipeView = () => {
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: RecipeApi) => {
+    const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => {
         e.preventDefault();
         setLoading(true);
         setError("");

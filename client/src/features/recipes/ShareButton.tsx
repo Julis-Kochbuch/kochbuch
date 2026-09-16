@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import Modal from '../../components/Modal';
-import { type ShareableUserApi, type ShareableUserListApi } from '../../utils/ApiTypes'
+import { type ShareableUser, type ShareableUserList } from '@kochbuch/common';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import backendAddress from '../../utils/BackendAddress';
 
@@ -13,7 +13,7 @@ type ShareButtonProps = {
 type UserCheckboxProps = {
     selectedUsersHook: [Number[], React.Dispatch<React.SetStateAction<Number[]>>];
     removedUsersHook: [Number[], React.Dispatch<React.SetStateAction<Number[]>>];
-    user: ShareableUserApi;
+    user: ShareableUser;
     disabled?: boolean;
 };
 
@@ -52,7 +52,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
 
     const [selectedUsers, setSelectedUsers] = useState<Number[]>([]);
     const [removedUsers, setRemovedUsers] = useState<Number[]>([]);
-    const [allUsers, setAllUsers] = useState<ShareableUserListApi>({ local: [], foreign: [] });
+    const [allUsers, setAllUsers] = useState<ShareableUserList>({ local: [], foreign: [] });
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -74,7 +74,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                     throw new Error(data.error || data.message || "Fetching users failed");
                 }
 
-                setAllUsers(data as ShareableUserListApi);
+                setAllUsers(data as ShareableUserList);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";

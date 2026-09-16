@@ -8,13 +8,13 @@ import AddButton from '../../components/AddButton';
 import DeleteButton from '../../components/DeleteButton';
 import SortableFieldset from '../../components/SortableFieldset';
 import SortableFieldsetContext from '../../components/SortableFieldsetContext';
-import { type RecipeApi, type ImageApi, type IngredientApi, type StepApi } from '../../utils/ApiTypes';
+import { type Recipe, type RecipeImage, type RecipeIngredient, type RecipeStep } from '@kochbuch/common';
 import Fraction from '../../utils/Fraction';
 import { type RecipeOutletContext } from '../../views/RecipeView.js';
 import { useGlobalState } from '../../utils/GlobalState.js';
 import { type Category } from './CategorySelector';
 import BackButton from '../../components/BackButton.js';
-import ImageForm, { type Image } from './ImageForm.js';
+import ImageForm, { type ImageWithFile } from './ImageForm.js';
 import backendAddress from '../../utils/BackendAddress.js';
 
 import '../../assets/css/recipe.css';
@@ -28,7 +28,7 @@ const RecipeForm = () => {
     const [servings, setServings] = useState<string>();
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [steps, setSteps] = useState<Step[]>([]);
-    const [images, setImages] = useState<Image[]>([]);
+    const [images, setImages] = useState<ImageWithFile[]>([]);
 
     useEffect(() => {
         if (recipe) {
@@ -48,7 +48,7 @@ const RecipeForm = () => {
                 apiId: step.id,
                 text: step.text,
             })));
-            setImages(recipe.images.map((image): Image => ({
+            setImages(recipe.images.map((image): ImageWithFile => ({
                 id: image.id ?? Date.now(),
                 apiId: image.id,
                 slot: image.slot,
@@ -59,7 +59,7 @@ const RecipeForm = () => {
         }
     }, [recipe]);
 
-    const newRecipe = (): RecipeApi => {
+    const newRecipe = (): Recipe => {
         return {
             id: recipe?.id,
             name: name,
@@ -70,13 +70,13 @@ const RecipeForm = () => {
             author: recipe?.author,
 
             images:
-                images.filter(image => { return image.url ? true : false }).map((image): ImageApi => ({
+                images.filter(image => { return image.url ? true : false }).map((image): RecipeImage => ({
                     id: image.apiId,
                     slot: image.slot,
                     caption: image.caption,
                 })),
             ingredients:
-                ingredients.map((ingredient, index): IngredientApi => ({
+                ingredients.map((ingredient, index): RecipeIngredient => ({
                     id: ingredient.apiId,
                     index_number: index,
                     amount: ingredient.amount?.valueAsNumber,
@@ -85,7 +85,7 @@ const RecipeForm = () => {
                     comment: ingredient.comment
                 })),
             steps:
-                steps.map((step, index): StepApi => ({
+                steps.map((step, index): RecipeStep => ({
                     id: step.apiId,
                     index_number: index,
                     text: step.text,
