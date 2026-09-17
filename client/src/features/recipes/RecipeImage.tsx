@@ -1,12 +1,12 @@
 import { type RecipeImage } from "@kochbuch/common";
 
-type RecipeImageProps = {
+type ImageRecipeProps = {
     slot: number;
     recipeId: number | undefined;
     images: RecipeImage[] | undefined;
 }
 
-const RecipeImage = ({ slot, recipeId, images }: RecipeImageProps) => {
+const ImageRecipe = ({ slot, recipeId, images }: ImageRecipeProps) => {
     const image = images?.find(image => image.slot === slot);
 
     return (
@@ -21,4 +21,4 @@ const RecipeImage = ({ slot, recipeId, images }: RecipeImageProps) => {
     )
 }
 
-export default RecipeImage
+export default ImageRecipe
