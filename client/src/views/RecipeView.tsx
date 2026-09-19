@@ -8,10 +8,22 @@ import { useGlobalState } from '../utils/GlobalState';
 import Modal from '../components/Modal';
 import backendAddress from '../utils/BackendAddress';
 
+type NavigateTarget =
+    | number
+    | {
+        to: To;
+        options?: NavigateOptions;
+    }
+    | ((params?: any) => {
+        to: To;
+        options?: NavigateOptions;
+    });
+
 export type RecipeOutletContext = {
     recipe?: Recipe;
+    setRecipe?: React.Dispatch<React.SetStateAction<Recipe | undefined>>;
     disabled?: boolean;
-    navigateTarget?: { delta: number } | { to: To, options?: NavigateOptions }
+    navigateTarget?: NavigateTarget;
     onFormSubmit?: (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => Promise<string>;
 };
 
@@ -80,13 +92,14 @@ const RecipeView = () => {
             }
 
             setRecipe(recipe);
+            return recipeId;
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
             setError(message);
+            return "-1";
         } finally {
             setLoading(false);
-            return recipeId ?? "-1";
         }
     }
 
@@ -97,7 +110,7 @@ const RecipeView = () => {
                     <BackButton />
                 </>,
                 globalState.refs.headerMain.current)}
-            <Outlet context={{ recipe: recipe, disabled: loading, navigateTarget: { delta: -1 }, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
+            <Outlet context={{ recipe: recipe, setRecipe: setRecipe, disabled: loading, navigateTarget: -1, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
                     <h2>Error</h2>

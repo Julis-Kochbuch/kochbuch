@@ -2,6 +2,7 @@ export type RecipeImage = {
     id?: number;
     slot: number;
     caption?: string;
+    changed?: number;
 }
 
 export type RecipeIngredient = {

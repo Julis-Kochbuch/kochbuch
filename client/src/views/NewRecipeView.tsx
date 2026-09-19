@@ -14,7 +14,6 @@ const NewRecipeView = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [id, setId] = useState<string>();
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => {
         e.preventDefault();
@@ -37,14 +36,16 @@ const NewRecipeView = () => {
                 throw new Error(data.error || data.message || "Creating recipe failed");
             }
 
-            setId(data.id);
+            const newId: string = data.id.toString()
+
+            return newId;
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
             setError(message);
+            return "-1";
         } finally {
             setLoading(false);
-            return id ?? "-1";
         }
     }
 
@@ -67,7 +68,7 @@ const NewRecipeView = () => {
                         steps: [{ index_number: 0, text: "In a bowl, mix the flour and the salt" }]
                     },
                     disabled: loading,
-                    navigateTarget: { to: { pathname: "/recipe/" + id }, options: { replace: true } },
+                    navigateTarget: ((id: string) => { return { to: { pathname: "/recipe/" + id }, options: { replace: true } } }),
                     onFormSubmit: handleSubmit
                 } satisfies RecipeOutletContext}
             />

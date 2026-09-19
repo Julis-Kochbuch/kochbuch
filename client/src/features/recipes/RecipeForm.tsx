@@ -54,7 +54,7 @@ const RecipeForm = () => {
                 id: image.id ?? Date.now(),
                 apiId: image.id,
                 slot: image.slot,
-                url: recipe.id ? `/api/uploads/recipe/${recipe.id}/${image.slot}.webp` : undefined,
+                url: recipe.id ? `/uploads/images/recipe-${recipe.id}/${image.slot}.webp` : undefined,
                 caption: image.caption,
                 fileWasChanged: false
             })));
@@ -76,6 +76,7 @@ const RecipeForm = () => {
                     id: image.apiId,
                     slot: image.slot,
                     caption: image.caption,
+                    changed: image.fileWasChanged ? Date.now() : undefined
                 })),
             ingredients:
                 ingredients.map((ingredient, index): RecipeIngredient => ({
@@ -97,7 +98,10 @@ const RecipeForm = () => {
 
     const handleImagesSubmit = async (recipeId: string) => {
         try {
-            if (images.length === 0) return;
+            if (images.length === 0) {
+                console.log(`no images found`);
+                return;
+            };
 
             let anyImageChanged = false;
 
@@ -113,7 +117,10 @@ const RecipeForm = () => {
                 anyImageChanged = true;
             })
 
-            if (!anyImageChanged) return;
+            if (!anyImageChanged) {
+                console.log(`no images changed`);
+                return;
+            };
 
             const response = await fetch(`${backendAddress}/uploads/recipe/${recipeId}`, {
                 method: "POST",
@@ -138,13 +145,19 @@ const RecipeForm = () => {
             onSubmit={(e) => {
                 onFormSubmit?.(e, newRecipe())
                     .then(id => {
-                        if (id === "-1") return;
+                        if (id === "-1") {
+                            console.log(`no id found: ${id}`);
+                            return;
+                        };
 
                         handleImagesSubmit(id).then(() => {
                             if (!navigateTarget) return;
 
-                            if ("delta" in navigateTarget) {
-                                navigate(navigateTarget.delta);
+                            if (typeof navigateTarget === "number") {
+                                navigate(navigateTarget);
+                            } else if (typeof navigateTarget === "function") {
+                                const target = navigateTarget(id);
+                                navigate(target.to, target.options);
                             } else {
                                 navigate(navigateTarget.to, navigateTarget.options);
                             }

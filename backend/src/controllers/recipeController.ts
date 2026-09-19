@@ -237,7 +237,7 @@ const recipeDelete = async (req: Request<{ id: string }>, res: Response<{ messag
         WHERE id = $1;
         `, [id]);
 
-    await fs.rm(`${uploadDir}/recipe-${id}`, { recursive: true, force: true });
+    await fs.rm(`${uploadDir}/images/recipe-${id}`, { recursive: true, force: true });
 
     res.status(200).json({ message: 'Recipe deleted' });
 }
@@ -374,7 +374,6 @@ const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Respons
 
             for (const file of deleted_files) {
                 await fs.rm(`${uploadDir}/images/recipe-${id}/${file}`, { recursive: true, force: true });
-                console.log(`${uploadDir}/images/recipe-${id}/${file} deleted`);
             }
 
             await Promise.all(
