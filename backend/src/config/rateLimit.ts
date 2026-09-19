@@ -1,7 +1,7 @@
 import { type Options } from 'express-rate-limit'
 
 const rateLimitConfig: Partial<Options> = {
-    windowMs: 15 * 60 * 1000,
+    windowMs: (process.env.MODE === "prod") ? 15 * 60 * 1000 : 60000,
     limit: 100,
     standardHeaders: "draft-8",
     legacyHeaders: false,
