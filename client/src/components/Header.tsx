@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type JSX } from "react";
 import { createPortal } from "react-dom";
 
 import { useGlobalState, useGlobalStateDispatch } from "../utils/GlobalState";
+import useTheme from "../utils/useTheme";
+import useTitle from "../utils/useTitle";
 
 import '../assets/css/header.css';
 
@@ -9,7 +11,7 @@ type HeaderProps = {
     children?: string | JSX.Element | JSX.Element[] | React.ReactNode;
 };
 
-const Header = ({ children } : HeaderProps) => {
+const Header = ({ children }: HeaderProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
@@ -17,6 +19,10 @@ const Header = ({ children } : HeaderProps) => {
     const headerMenuRef = useRef<HTMLDivElement | null>(null);
 
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+    useTheme(globalState.settings?.theme);
+
+    useTitle(globalState.user?.name ? globalState.user.name + "s Kochbuch" : "Kochbuch");
 
     useEffect(() => {
         dispatchGlobalState({
@@ -28,8 +34,6 @@ const Header = ({ children } : HeaderProps) => {
 
     return createPortal(
         <>
-            <title>{globalState.user?.name ? globalState.user.name + "s Kochbuch" : "Kochbuch"}</title>
-            {globalState.settings?.themeSlug && <link rel="stylesheet" href={"/api/uploads/theme/" + globalState.settings.themeSlug + "/theme.css"} />}
             <header className="header__wrapper">
                 <div className="header__inner">
                     <div className="header__portal-main" ref={headerMainRef}></div>

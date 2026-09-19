@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, type ActionDispatch, type JSX, type RefObject } from 'react';
 
+import { type Theme, type UserFull } from '@kochbuch/common';
 import backendAddress from './BackendAddress';
 
 type GlobalState = {
@@ -10,7 +11,7 @@ type GlobalState = {
         role?: number;
     }
     settings: {
-        themeSlug?: string;
+        theme?: Theme | string;
         advancedOptions?: boolean
     };
     refs: {
@@ -26,7 +27,7 @@ type GlobalStateReducerAction =
         id?: number,
         name?: string,
         role?: number,
-        settingThemeSlug?: string,
+        settingTheme?: Theme | string,
         settingAdvancedOptions?: boolean
     }
     | {
@@ -47,7 +48,7 @@ type GlobalStateReducerAction =
     }
     | {
         type: "set theme",
-        themeSlug: string
+        theme: Theme | string
     }
 
 
@@ -64,10 +65,10 @@ export function globalStateReducer(state: GlobalState, action: GlobalStateReduce
                 },
                 settings: {
                     ...state.settings,
-                    themeSlug: action.settingThemeSlug,
+                    theme: action.settingTheme ?? state.settings.theme,
                     advancedOptions: action.settingAdvancedOptions
                 }
-            };
+            } satisfies GlobalState;
         }
         case "reset user data": {
             return {
@@ -80,7 +81,7 @@ export function globalStateReducer(state: GlobalState, action: GlobalStateReduce
                 },
                 settings: {
                     ...state.settings,
-                    themeSlug: undefined,
+                    theme: "default",
                     advancedOptions: undefined
                 }
             };
@@ -117,7 +118,7 @@ export function globalStateReducer(state: GlobalState, action: GlobalStateReduce
                 ...state,
                 settings: {
                     ...state.user,
-                    themeSlug: action.themeSlug ?? state.settings.themeSlug,
+                    theme: action.theme ?? state.settings.theme,
                 }
             }
         };
@@ -166,7 +167,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                     });
                     dispatchGlobalState({
                         type: "set theme",
-                        themeSlug: "default"
+                        theme: "default"
                     });
                     throw new Error(data.error || data.message || "User data failed");
                 }
@@ -176,20 +177,14 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                     authStatus: "authenticated"
                 });
 
-                const userData = data as {
-                    name: string;
-                    id: number;
-                    role: number;
-                    setting_theme_slug?: string;
-                    setting_advanced_options: boolean;
-                };
+                const userData = data as UserFull;
 
                 dispatchGlobalState({
                     type: "set user data",
                     id: userData.id,
                     name: userData.name,
                     role: userData.role,
-                    settingThemeSlug: userData.setting_theme_slug ?? "default",
+                    settingTheme: userData.setting_theme ?? "default",
                     settingAdvancedOptions: userData.setting_advanced_options
                 });
             } catch (err) {

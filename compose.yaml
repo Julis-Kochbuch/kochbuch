@@ -47,8 +47,8 @@ services:
       DATABASE_DB: kochbuch
       HOSTNAME: ${HOSTNAME:?}
       PORT: 5001
-      HTTP_PROXY_PORT: ${HTTP_PORT}
-      HTTPS_PROXY_PORT: ${HTTPS_PORT}
+      HTTP_PROXY_PORT: ${HTTP_PORT-}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       MODE: dev
     secrets:
       - pg_pw_backend
@@ -78,9 +78,11 @@ services:
     environment:
       CHOKIDAR_USEPOLLING: true
       HOSTNAME: ${HOSTNAME:?}
-      HTTP_PROXY_PORT: ${HTTP_PORT}
-      HTTPS_PROXY_PORT: ${HTTPS_PORT}
+      HTTP_PROXY_PORT: ${HTTP_PORT-}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       MODE: prod
+    volumes:
+      - uploads:/usr/share/nginx/html/uploads:ro
     labels:
       traefik.enable: true
       traefik.http.routers.client.entrypoints: web

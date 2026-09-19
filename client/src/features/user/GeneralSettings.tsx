@@ -10,15 +10,15 @@ const GeneralSettings = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
-    const [themes, setThemes] = useState<Theme[]>([]);
-    const [theme, setTheme] = useState<Theme>();
+    const [themes, setThemes] = useState<string[]>([]);
+    const [theme, setTheme] = useState<Theme | string>();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        if (globalState.settings?.themeSlug) {
-            setTheme({ slug: globalState.settings.themeSlug });
+        if (globalState.settings?.theme) {
+            setTheme(globalState.settings.theme);
         }
     }, [globalState.settings]);
 
@@ -39,7 +39,8 @@ const GeneralSettings = () => {
                     throw new Error(data.error || data.message || "Fetching themes failed");
                 }
 
-                setThemes(data.themes as Theme[]);
+                setThemes(data.map((themeData: { slug: string }) => { return themeData.slug }));
+                console.log(`Themes: ${themes}`);
             } catch (err) {
                 const message =
                     err instanceof Error ? err.message : "Unexpected error";
@@ -57,7 +58,7 @@ const GeneralSettings = () => {
         setError("");
 
         try {
-            if (!theme?.slug) return;
+            if (!theme) return;
 
             const response = await fetch(`${backendAddress}/user/theme`, {
                 method: "POST",
@@ -66,7 +67,7 @@ const GeneralSettings = () => {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    slug: theme.slug
+                    slug: typeof theme === "string" ? theme : theme.slug
                 })
             });
 
@@ -76,7 +77,7 @@ const GeneralSettings = () => {
                 throw new Error(data.error || data.message || "Action failed");
             }
 
-            dispatchGlobalState({ type: "set theme", themeSlug: theme.slug })
+            dispatchGlobalState({ type: "set theme", theme: theme })
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
@@ -101,17 +102,17 @@ const GeneralSettings = () => {
                     <select
                         id="theme"
                         onChange={(e => {
-                            setTheme(themes.filter((theme) => theme.slug === e.target.value)[0]);
+                            setTheme(themes.filter((theme) => theme === e.target.value)[0]);
                         })}
-                        value={theme?.slug}
+                        value={typeof theme === "string" ? theme : theme?.slug}
                         aria-labelledby='theme-label'
                         disabled={loading || globalState.modalsOpen > 0}
                         required
                     >
                         {
                             (themes ?? []).map((theme, index) => (
-                                <option key={index} value={theme.slug}>
-                                    {theme.slug}
+                                <option key={index} value={theme}>
+                                    {theme}
                                 </option>
                             ))
                         }

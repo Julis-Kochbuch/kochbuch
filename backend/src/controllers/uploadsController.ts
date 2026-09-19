@@ -1,4 +1,4 @@
-import { type Request, type Response, type NextFunction } from 'express';
+import { type Request, type Response } from 'express';
 import { fileTypeFromBuffer } from "file-type";
 import sharp from "sharp";
 import fs from "fs/promises";
@@ -85,23 +85,4 @@ const recipeImageGet = async (req: Request<{ recipe_id: string, image_name: stri
     });
 }
 
-const themeFileGet = async (req: Request<{ theme_slug: string, file_name: string }>, res: Response<{ message: string }>) => {
-    const { theme_slug, file_name } = req.params;
-
-    const file = `${uploadDir}/themes/${theme_slug}/${file_name}`;
-
-    res.sendFile(
-        file,
-        {
-            headers: {
-                "Cache-Control": "public, max-age=31536000, immutable"
-            }
-        },
-        err => {
-            if (err) {
-                return res.status(404).json({ message: 'File not found' });
-            }
-        });
-}
-
-export default { uploadRecipeImage, recipeImageGet, themeFileGet }
+export default { uploadRecipeImage, recipeImageGet }

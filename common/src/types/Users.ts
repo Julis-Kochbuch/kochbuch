@@ -1,3 +1,5 @@
+import { Theme } from "./Other.js";
+
 export interface ShareableUser {
     name: string;
     key_id: number;
@@ -18,6 +20,6 @@ export interface User extends UserSimplified {
 }
 
 export interface UserFull extends User {
-    setting_theme_slug: string;
+    setting_theme: Theme | string | null;
     setting_advanced_options: boolean;
 }

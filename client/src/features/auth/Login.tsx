@@ -6,6 +6,7 @@ import Modal from '../../components/Modal';
 import backendAddress from '../../utils/BackendAddress';
 
 import '../../assets/css/login.css'
+import type { UserFull } from '@kochbuch/common';
 
 const Login = () => {
     const globalState = useGlobalState();
@@ -62,20 +63,14 @@ const Login = () => {
                 throw new Error(data.error || data.message || "Fetching user data failed");
             }
 
-            const userData = responseData as {
-                name: string;
-                id: number;
-                role: number;
-                setting_theme_slug?: string;
-                setting_advanced_options: boolean;
-            };
+            const userData = responseData as UserFull;
 
             dispatchGlobalState({
                 type: "set user data",
                 id: userData.id,
                 name: userData.name,
                 role: userData.role,
-                settingThemeSlug: userData.setting_theme_slug,
+                settingTheme: userData.setting_theme === null ? undefined : userData.setting_theme,
                 settingAdvancedOptions: userData.setting_advanced_options
             });
         } catch (err) {

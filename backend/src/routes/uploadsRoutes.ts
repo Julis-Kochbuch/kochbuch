@@ -10,6 +10,4 @@ router.route('/recipe/:id').post(requireAuth(0), upload.array("images"), uploads
 
 router.route('/recipe/:recipe_id/:image_name').get(requireAuth(0), uploadsController.recipeImageGet);
 
-router.route('/theme/:theme_slug/:file_name').get(uploadsController.themeFileGet);
-
 export default router;

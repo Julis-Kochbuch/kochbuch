@@ -49,6 +49,8 @@ services:
           action: rebuild
     environment:
       MODE: dev
+    volumes:
+      - uploads:/app/client/public/uploads:ro
     labels:
       traefik.http.services.client.loadbalancer.server.port: 5173
 

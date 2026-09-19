@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import bcrypt from 'bcrypt';
-import { DatabaseError } from 'pg';
+import { DatabaseError, type QueryResult } from 'pg';
 
 import * as db from '../db/index.js';
 import type { User, ShareableUserList, UserFull, Theme } from '@kochbuch/common'
@@ -42,8 +42,8 @@ const innerApiKeysGet = async (req: Request, res: Response<ShareableUserList>) =
 }
 
 const meGet = async (req: Request, res: Response<UserFull>) => {
-    const result = await db.query(`
-        SELECT u.id, u.name, u.role, u.setting_theme_slug, u.setting_advanced_options
+    const result: QueryResult<UserFull> = await db.query(`
+        SELECT u.id, u.name, u.role, u.setting_theme_slug as setting_theme, u.setting_advanced_options
         FROM users u
         WHERE u.id = $1;
         `,
@@ -51,11 +51,11 @@ const meGet = async (req: Request, res: Response<UserFull>) => {
     );
 
     const user_parsed: UserFull = {
-        id: result.rows[0].id,
-        name: result.rows[0].name,
-        role: result.rows[0].role,
-        setting_theme_slug: result.rows[0].setting_theme_slug,
-        setting_advanced_options: result.rows[0].setting_advanced_options,
+        id: result.rows[0]!.id,
+        name: result.rows[0]!.name,
+        role: result.rows[0]!.role,
+        setting_theme: result.rows[0]?.setting_theme ?? null,
+        setting_advanced_options: result.rows[0]?.setting_advanced_options ?? false,
     }
 
     res.status(200).json(user_parsed);
@@ -175,14 +175,14 @@ const newUserPost = async (req: Request<{}, {}, { username: string, password: st
     }
 }
 
-const themesListGet = async (req: Request, res: Response<Theme[]>) => {
+const themesListGet = async (req: Request, res: Response<Partial<Theme>[]>) => {
     const result = await db.query(`
         SELECT t.slug
         FROM themes t;
         `
     );
 
-    res.status(200).json(result.rows as Theme[]);
+    res.status(200).json(result.rows as Partial<Theme>[]);
 }
 
 const themePost = async (req: Request<{}, {}, { slug: string }>, res: Response<{ message: string }>) => {

@@ -2,9 +2,10 @@ import fs from "fs/promises";
 import type { PathLike } from 'fs';
 
 import * as db from '../db/index.js';
+import uploadDir from "../config/uploadDir.js";
 
 export async function checkThemes() {
-    const themes_dir = "/app/uploads/themes";
+    const themes_dir = `${uploadDir}/themes`;
 
     await fs.mkdir(`${themes_dir}`, { recursive: true });
 
