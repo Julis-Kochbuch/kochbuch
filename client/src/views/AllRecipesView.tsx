@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 
 import { type RecipeListByCategory } from '@kochbuch/common';
 import Modal from '../components/Modal';
@@ -57,9 +58,9 @@ const RecipeView = () => {
                         {category.category_name && <h2 className='recipe-list-category'>{category.category_name}</h2>}
                         {category.recipes.map((recipe) => (
                             <li className='recipe-list-item'>
-                                <a href={'/recipe/' + recipe.id}>
+                                <Link to={`/recipe/${recipe.id}`}>
                                     {recipe.name}
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </>
