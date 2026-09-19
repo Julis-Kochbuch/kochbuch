@@ -5,11 +5,11 @@ html {
 * {
     max-width: 100%;
     margin: 0;
-	padding: 0;
-	border: 0;
-	font: inherit;
+    padding: 0;
+    border: 0;
+    font: inherit;
     color: inherit;
-	vertical-align: baseline;
+    vertical-align: baseline;
 }
 
 :where(:root) {
@@ -38,7 +38,7 @@ body {
 :where(#root) {
     display: flex;
     flex-direction: column;
-    
+
     max-width: 1000px;
     margin: 3em auto 0;
     padding: 1em;
@@ -162,6 +162,7 @@ input[type=number] {
 }
 
 :where(.add-button)::before,
+:where(.subtract-button)::before,
 :where(.back-button)::before,
 :where(.close-button)::before,
 :where(.delete-button)::before,
@@ -173,6 +174,7 @@ input[type=number] {
 }
 
 :where(.add-button:not(.has-children)),
+:where(.subtract-button:not(.has-children)),
 :where(.back-button:not(.has-children)),
 :where(.close-button:not(.has-children)),
 :where(.delete-button:not(.has-children)),
@@ -190,9 +192,13 @@ input[type=number] {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' style='color: rgb(0  0  0)%3B' width='64' height='64' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 5v14m-7-7h14'%3E%3C/path%3E%3C/svg%3E");
 }
 
+:where(.subtract-button:not(.has-children)) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' style='color: rgb(0  0  0)%3B' width='64' height='64' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 12h14'%3E%3C/path%3E%3C/svg%3E");
+}
+
 :where(.back-button:not(.has-children)) {
     font-size: 1.5em;
-    
+
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' style='color: rgb(0  0  0)%3B' width='64' height='64' viewBox='0 0 48 48'%3E%3Cpath fill='none' stroke='currentColor' stroke-linejoin='round' stroke-width='4' d='M44 40.836q-7.34-8.96-13.036-10.168t-10.846-.365V41L4 23.545L20.118 7v10.167q9.523.075 16.192 6.833q6.668 6.758 7.69 16.836Z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");
 }
 

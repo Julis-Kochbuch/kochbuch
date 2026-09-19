@@ -79,16 +79,25 @@ const Recipe = () => {
                     {recipe?.category_id && recipe?.category_name}
                 </div>
                 <div className='recipe-servings'>
-                    <input
-                        type='number'
-                        className='input-recipe-servings'
-                        id='servings'
-                        min={0.5}
-                        step={0.5}
-                        value={servings}
-                        onChange={(e) => setServings(Number(e.target.value))}
-                        disabled={globalState.modalsOpen > 0}
-                    />
+                    <div className='input-recipe-servings'>
+                        <button
+                            className='subtract-button'
+                            onClick={() => setServings(prev => Math.max(1, prev - 1))}
+                        ></button>
+                        <input
+                            type='number'
+                            id='servings'
+                            min={0.5}
+                            step={0.5}
+                            value={servings}
+                            onChange={(e) => setServings(Number(e.target.value))}
+                            disabled={globalState.modalsOpen > 0}
+                        />
+                        <button
+                            className='add-button'
+                            onClick={() => setServings(prev => Math.max(0, prev + 1))}
+                        ></button>
+                    </div>
                     <label className='recipe-servings-label' htmlFor='servings'>Servings</label>
                 </div>
                 <div className={'recipe-author' + (recipe?.author ? '' : ' empty')}>

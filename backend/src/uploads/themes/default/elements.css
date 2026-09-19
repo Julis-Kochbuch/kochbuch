@@ -18,7 +18,7 @@ input[type=text]:invalid,
 input[type=password]:invalid,
 input[type=number]:invalid,
 textarea:invalid {
-    box-shadow: 
+    box-shadow:
         inset 0px 0px 0px var(--line-thickness) var(--color-primary),
         var(--line-thickness) var(--line-thickness) 0px var(--color-secondary);
 }
@@ -38,7 +38,7 @@ input[type=checkbox] {
     opacity: 0;
 }
 
-input[type=checkbox] ~ li .checkbox {
+input[type=checkbox]~li .checkbox {
     display: inline-block;
     position: relative;
 
@@ -54,20 +54,20 @@ input[type=checkbox] ~ li .checkbox {
     transition: box-shadow var(--transition-standard);
 }
 
-input[type=checkbox] ~ li:hover .checkbox,
-input[type=checkbox]:hover ~ li .checkbox {
+input[type=checkbox]~li:hover .checkbox,
+input[type=checkbox]:hover~li .checkbox {
     box-shadow:
         inset 0px 0px 0px var(--line-thickness) var(--color-primary);
 }
 
 @media not print {
-    input[type=checkbox]:checked ~ li .checkbox {
+    input[type=checkbox]:checked~li .checkbox {
         box-shadow:
             inset 0px 0px 0px var(--line-thickness) rgb(from var(--color-tertiary) r g b / .5);
     }
 }
 
-input[type=checkbox] ~ li .checkbox::before {
+input[type=checkbox]~li .checkbox::before {
     content: '';
 
     height: 2em;
@@ -84,7 +84,7 @@ input[type=checkbox] ~ li .checkbox::before {
 }
 
 @media not print {
-    input[type=checkbox]:checked ~ li .checkbox::before {
+    input[type=checkbox]:checked~li .checkbox::before {
         width: 2em;
 
         transition: width var(--transition-short) ease-in;
@@ -92,7 +92,7 @@ input[type=checkbox] ~ li .checkbox::before {
 }
 
 @media (prefers-color-scheme: dark) {
-    input[type=checkbox] ~ li .checkbox::before {
+    input[type=checkbox]~li .checkbox::before {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='159' viewBox='-3.5 25 131 40' height='120' preserveAspectRatio='xMidYMid meet' version='1.0'%3E%3Cg clip-path='url(%23395f5e6b40)'%3E%3Cpath fill='%23111' d='M 0.121094 51.191406 C 0.121094 51.191406 7.492188 42.316406 15.820312 39.640625 C 18.074219 41.328125 30.859375 66.820312 33.113281 66.539062 C 35.648438 66.257812 52.359375 43.027344 88.492188 0.410156 C 88.492188 0.410156 98.949219 5.148438 118.191406 6.136719 C 67.878906 45.519531 41.855469 83.90625 39.578125 85.761719 C 33.09375 88.855469 29.769531 87.066406 27.515625 85.660156 C 22.160156 80.878906 0.402344 52.316406 0.121094 51.191406 Z M 0.121094 51.191406 ' fill-opacity='1' fill-rule='evenodd'/%3E%3C/g%3E%3Cg clip-path='url(%23a959c98e5b)'%3E%3Cpath stroke-linecap='butt' transform='matrix(0.211558  0  0  0.211122  -14.346852  -73.193283)' fill='none' stroke-linejoin='miter' d='M 68.38754 589.161353 C 68.38754 589.161353 103.229458 547.123968 142.595101 534.449845 C 153.248936 542.442869 213.682214 663.189335 224.336049 661.857164 C 236.319306 660.524994 315.30909 550.4914 486.102804 348.630544 C 486.102804 348.630544 535.531428 371.073918 626.486005 375.755018 C 388.667298 562.295912 265.658896 744.118701 254.894276 752.907327 C 224.243728 767.561204 208.530707 759.087118 197.876872 752.426265 C 172.562474 729.779364 69.716962 594.490035 68.38754 589.161353 Z M 68.38754 589.161353 ' stroke='%23b19132' stroke-width='30' stroke-opacity='1' stroke-miterlimit='4'/%3E%3C/g%3E%3C/svg%3E");
     }
 }
@@ -117,7 +117,7 @@ h1 {
 
 h2 {
     margin-bottom: var(--size-xsmall);
-    
+
     font-size: var(--size-medium);
     text-decoration: none;
     text-transform: none;
@@ -130,6 +130,7 @@ h2 {
 }
 
 .add-button,
+.subtract-button,
 .new-recipe-button {
     position: relative;
 
@@ -147,6 +148,7 @@ h2 {
 }
 
 .add-button:hover,
+.subtract-button:hover,
 .new-recipe-button:hover {
     box-shadow:
         inset 0px 0px 0px var(--line-thickness) currentColor,
@@ -155,6 +157,7 @@ h2 {
 }
 
 .add-button::before,
+.subtract-button::before,
 .new-recipe-button::before {
     content: '+';
 
@@ -171,15 +174,22 @@ h2 {
     line-height: 1;
 }
 
-.add-button {
+.add-button,
+.subtract-button {
     height: var(--size-medium);
     width: var(--size-medium);
+}
+
+.subtract-button::before {
+    content: '-';
 }
 
 .new-recipe-button {
     font-size: var(--size-xlarge);
 }
 
+.recipe-servings .add-button::before,
+.recipe-servings .subtract-button::before,
 .new-recipe-button::before {
     top: -12.5%;
 }

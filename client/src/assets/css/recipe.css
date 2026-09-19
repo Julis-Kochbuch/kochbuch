@@ -28,7 +28,7 @@
 }
 
 @media print {
-    body > :not(:has(.recipe)) {
+    body> :not(:has(.recipe)) {
         display: none !important;
     }
 }
@@ -120,6 +120,12 @@
     margin-right: .4ch;
 }
 
+:where(div.input-recipe-servings) {
+    display: inline-flex;
+    flex-direction: row;
+    gap: .4ch;
+}
+
 :where(.recipe-servings-label) {
     display: initial;
 }
@@ -167,7 +173,7 @@
     width: fit-content;
 
     margin-inline: auto;
-    
+
     list-style: none;
 }
 
@@ -192,7 +198,7 @@
 :where(.input-recipe-ingredient__content #comment) {
     field-sizing: content;
     flex: 1;
-    
+
     font-style: italic;
     padding-right: .25ch;
 }
@@ -227,9 +233,9 @@
 
 @media not print {
     :where(.recipe-step-checkbox:checked ~ li) {
-    text-decoration: line-through;
-    opacity: .5;
-}
+        text-decoration: line-through;
+        opacity: .5;
+    }
 }
 
 :where(.recipe-step-index) {
@@ -272,13 +278,13 @@
 
     box-shadow:
         inset 0px 0px 0px 2px gray;
-    
+
     overflow: hidden;
 }
 
 .input-recipe-image__wrapper .input-recipe-image__image {
     display: block !important;
-    
+
     height: 100% !important;
     width: 100% !important;
 

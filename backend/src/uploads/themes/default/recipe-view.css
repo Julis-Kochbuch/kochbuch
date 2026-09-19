@@ -135,6 +135,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
+
     .recipe:not(.form) .image-1,
     .recipe:not(.form) .image-2 {
         opacity: .5;
@@ -162,6 +163,7 @@
 
 @media screen and (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: scroll(y)) {
+
         .recipe:not(.form) .image-1,
         .recipe:not(.form) .image-2 {
             position: fixed;
@@ -172,7 +174,7 @@
 
         .recipe:not(.form) .image-1 {
             left: -5%;
-            
+
             transform: rotateZ(-10deg);
 
             animation: image-1-animation linear;
@@ -195,6 +197,7 @@
         transform: translateY(80vh) rotateZ(-10deg);
         transform: translateY(80svh) rotateZ(-10deg);
     }
+
     to {
         transform: translateY(50vh) rotateZ(-10deg);
         transform: translateY(50svh) rotateZ(-10deg);
@@ -206,6 +209,7 @@
         transform: translateY(60vh) rotateZ(15deg);
         transform: translateY(60svh) rotateZ(15deg);
     }
+
     to {
         transform: translateY(30vh) rotateZ(15deg);
         transform: translateY(30svh) rotateZ(15deg);
@@ -242,6 +246,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
+
     .recipe:not(.form) .image-1 img,
     .recipe:not(.form) .image-2 img {
         filter: none;
@@ -256,7 +261,7 @@
 
 .recipe .input-recipe-image__controls {
     column-gap: var(--size-small);
-    
+
     padding-inline: var(--size-small);
     border-top-left-radius: var(--size-small);
 
@@ -295,6 +300,12 @@
 
 .recipe .recipe-servings {
     grid-column: 1;
+}
+
+div.input-recipe-servings {
+    gap: var(--size-small);
+
+    margin-right: 0;
 }
 
 .recipe:not(.form) .recipe-servings input {
@@ -392,7 +403,7 @@
 }
 
 @media not print {
-    .recipe:not(.form) .recipe-step__wrapper :checked ~ li {
+    .recipe:not(.form) .recipe-step__wrapper :checked~li {
         color: rgb(from currentColor r g b / .5);
 
         transform: translateX(var(--size-small));
@@ -403,7 +414,7 @@
             color var(--transition-short) ease-out;
     }
 
-    .recipe:not(.form) .recipe-step__wrapper :checked ~ li .checkbox {
+    .recipe:not(.form) .recipe-step__wrapper :checked~li .checkbox {
         transform: translateX(calc(0px - var(--size-small)));
 
         transition:
@@ -425,6 +436,6 @@
     font-size: var(--size-medium);
 }
 
-#share-form :checked + label {
+#share-form :checked+label {
     color: var(--color-tertiary);
 }
