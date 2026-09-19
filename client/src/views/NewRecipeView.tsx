@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet } from 'react-router';
 import { createPortal } from "react-dom";
 
 import { type Recipe } from '@kochbuch/common';
@@ -14,15 +14,12 @@ const NewRecipeView = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
-    const navigate = useNavigate();
+    const [id, setId] = useState<string>();
 
     const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => {
         e.preventDefault();
         setLoading(true);
         setError("");
-
-        let id: string | undefined = undefined;
 
         try {
             const response = await fetch(`${backendAddress}/recipe/`, {
@@ -40,8 +37,7 @@ const NewRecipeView = () => {
                 throw new Error(data.error || data.message || "Creating recipe failed");
             }
 
-            id = data.id
-            navigate({ pathname: "/recipe/" + data.id }, { replace: true });
+            setId(data.id);
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
@@ -71,6 +67,7 @@ const NewRecipeView = () => {
                         steps: [{ index_number: 0, text: "In a bowl, mix the flour and the salt" }]
                     },
                     disabled: loading,
+                    navigateTarget: { to: { pathname: "/recipe/" + id }, options: { replace: true } },
                     onFormSubmit: handleSubmit
                 } satisfies RecipeOutletContext}
             />

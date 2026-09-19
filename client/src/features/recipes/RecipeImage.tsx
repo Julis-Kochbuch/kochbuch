@@ -13,7 +13,7 @@ const ImageRecipe = ({ slot, recipeId, images }: ImageRecipeProps) => {
         <div className={'recipe-image image-' + slot + ((image && recipeId) ? '' : ' empty')}>
             {(image && recipeId) &&
                 <>
-                    <img src={"/api/uploads/recipe/" + recipeId + "/" + slot + ".webp"} />
+                    <img src={`/uploads/images/recipe-${recipeId}/${slot}.webp`} />
                     <div className="recipe-image__text">{image.caption}</div>
                 </>
             }

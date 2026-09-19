@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useParams, useNavigate } from "react-router";
+import { Outlet, useParams, type To, type NavigateOptions } from "react-router";
 import { createPortal } from "react-dom";
 
 import { type Recipe } from '@kochbuch/common';
@@ -11,6 +11,7 @@ import backendAddress from '../utils/BackendAddress';
 export type RecipeOutletContext = {
     recipe?: Recipe;
     disabled?: boolean;
+    navigateTarget?: { delta: number } | { to: To, options?: NavigateOptions }
     onFormSubmit?: (e: React.SyntheticEvent<HTMLFormElement>, recipe: Recipe) => Promise<string>;
 };
 
@@ -18,8 +19,6 @@ const RecipeView = () => {
     let { recipeId } = useParams();
 
     const globalState = useGlobalState();
-
-    const navigate = useNavigate();
 
     const [recipe, setRecipe] = useState<Recipe>();
 
@@ -81,7 +80,6 @@ const RecipeView = () => {
             }
 
             setRecipe(recipe);
-            navigate(-1);
         } catch (err) {
             const message =
                 err instanceof Error ? err.message : "Unexpected error";
@@ -99,7 +97,7 @@ const RecipeView = () => {
                     <BackButton />
                 </>,
                 globalState.refs.headerMain.current)}
-            <Outlet context={{ recipe: recipe, disabled: loading, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
+            <Outlet context={{ recipe: recipe, disabled: loading, navigateTarget: { delta: -1 }, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
                     <h2>Error</h2>

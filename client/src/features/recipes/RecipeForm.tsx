@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router'
+import { useOutletContext, useNavigate } from 'react-router'
 
 import CategorySelector from './CategorySelector';
 import IngredientForm, { type Ingredient } from './IngredientForm';
@@ -20,8 +20,10 @@ import backendAddress from '../../utils/BackendAddress.js';
 import '../../assets/css/recipe.css';
 
 const RecipeForm = () => {
-    const { recipe, disabled, onFormSubmit } = useOutletContext<RecipeOutletContext>();
+    const { recipe, disabled, navigateTarget, onFormSubmit } = useOutletContext<RecipeOutletContext>();
     const globalState = useGlobalState();
+
+    const navigate = useNavigate();
 
     const [name, setName] = useState<string>("");
     const [category, setCategory] = useState<Category>();
@@ -97,6 +99,8 @@ const RecipeForm = () => {
         try {
             if (images.length === 0) return;
 
+            let anyImageChanged = false;
+
             const formData = new FormData();
 
             images.forEach(image => {
@@ -105,7 +109,11 @@ const RecipeForm = () => {
                 formData.append("images", image.file);
 
                 formData.append("slots", image.slot.toString())
+
+                anyImageChanged = true;
             })
+
+            if (!anyImageChanged) return;
 
             const response = await fetch(`${backendAddress}/uploads/recipe/${recipeId}`, {
                 method: "POST",
@@ -132,7 +140,15 @@ const RecipeForm = () => {
                     .then(id => {
                         if (id === "-1") return;
 
-                        handleImagesSubmit(id);
+                        handleImagesSubmit(id).then(() => {
+                            if (!navigateTarget) return;
+
+                            if ("delta" in navigateTarget) {
+                                navigate(navigateTarget.delta);
+                            } else {
+                                navigate(navigateTarget.to, navigateTarget.options);
+                            }
+                        });
                     });
             }}
             aria-disabled={disabled || (globalState.modalsOpen > 0)}

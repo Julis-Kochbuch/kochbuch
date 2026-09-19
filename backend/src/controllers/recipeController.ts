@@ -361,7 +361,7 @@ const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Respons
                 WHERE recipe_id = $1;
                 `, [id]);
 
-            await fs.rm(`${uploadDir}/recipe-${id}`, { recursive: true, force: true });
+            await fs.rm(`${uploadDir}/images/recipe-${id}`, { recursive: true, force: true });
         } else {
             const image_response = await client.query(`
                 DELETE FROM recipe_images
@@ -373,7 +373,8 @@ const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Respons
             const deleted_files = image_response.rows.map(file => { return `${file.slot}.webp` });
 
             for (const file of deleted_files) {
-                await fs.rm(`${uploadDir}/recipe-${id}/${file}`, { recursive: true, force: true });
+                await fs.rm(`${uploadDir}/images/recipe-${id}/${file}`, { recursive: true, force: true });
+                console.log(`${uploadDir}/images/recipe-${id}/${file} deleted`);
             }
 
             await Promise.all(
