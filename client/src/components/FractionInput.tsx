@@ -9,8 +9,7 @@ type FractionInputProps =
         onValueChange?: React.ChangeEventHandler<HTMLInputElement>;
     }
 
-const FractionInput = ({ value, onValueChange, ...props } : FractionInputProps) => {
-    console.log("render", JSON.stringify(value?.valueAsString));
+const FractionInput = ({ value, onValueChange, ...props }: FractionInputProps) => {
     return (
         <input
             {...props}
