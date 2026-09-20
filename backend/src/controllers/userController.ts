@@ -175,16 +175,6 @@ const newUserPost = async (req: Request<{}, {}, { username: string, password: st
     }
 }
 
-const themesListGet = async (req: Request, res: Response<Partial<Theme>[]>) => {
-    const result = await db.query(`
-        SELECT t.slug
-        FROM themes t;
-        `
-    );
-
-    res.status(200).json(result.rows as Partial<Theme>[]);
-}
-
 const themePost = async (req: Request<{}, {}, { slug: string }>, res: Response<{ message: string }>) => {
     const { slug } = req.body;
 
@@ -300,4 +290,4 @@ const userPost = async (req: Request<{ id: string }, {}, { username?: string, ro
     }
 }
 
-export default { allUsersGet, innerApiKeysGet, meGet, mePost, newUserPost, themesListGet, themePost, userDelete, userPost }
+export default { allUsersGet, innerApiKeysGet, meGet, mePost, newUserPost, themePost, userDelete, userPost }

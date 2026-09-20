@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import recipeRoutes from './routes/recipeRoutes.js';
 import uploadsRoutes from './routes/uploadsRoutes.js';
+import themeRoutes from './routes/themeRoutes.js';
 
 import { checkThemes } from './utils/checkThemes.js';
 
@@ -50,6 +51,8 @@ app.use('/user', userRoutes);
 app.use('/recipe', recipeRoutes);
 
 app.use('/uploads', uploadsRoutes);
+
+app.use('/theme', themeRoutes);
 
 
 

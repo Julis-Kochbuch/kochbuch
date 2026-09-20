@@ -13,7 +13,6 @@ router.route('/share').get(requireAuth(0), userController.innerApiKeysGet);
 router.route('/me').get(requireAuth(0), userController.meGet);
 router.route('/me').post(requireAuth(0), userController.mePost);
 
-router.route('/theme').get(requireAuth(0), userController.themesListGet);
 router.route('/theme').post(requireAuth(0), userController.themePost);
 
 router.route('/:id').delete(requireAuth(10), userController.userDelete);

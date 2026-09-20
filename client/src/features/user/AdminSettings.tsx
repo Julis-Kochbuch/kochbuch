@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { type User, type Theme } from '@kochbuch/common';
+import { type User, type Theme, type ThemeUpdate } from '@kochbuch/common';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
 import backendAddress from '../../utils/BackendAddress';
-
-type ThemeUpdate =
-    Omit<Theme, "files" | "update_url" | "version"
-    > & {
-        version: string;
-        download_url: string;
-    }
 
 const AdminSettings = () => {
     const globalState = useGlobalState();
@@ -63,7 +56,7 @@ const AdminSettings = () => {
             setError("");
 
             try {
-                const response = await fetch(`${backendAddress}/user/theme`, {
+                const response = await fetch(`${backendAddress}/theme`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -354,7 +347,13 @@ const AdminSettings = () => {
         <>
             <h2>Manage Users</h2>
             <ul className='settings-admin-userlist'>
-                {error != "" && <p>{error}</p>}
+                {error &&
+                    <Modal onCloseButtonClick={() => setError("")}>
+                        <h2>Error</h2>
+                        <p>{error}</p>
+                        <button type='button' onClick={() => setError("")}>OK</button>
+                    </Modal>
+                }
                 <div className='user user-head'>
                     <div id='username' className='user__name'>Username</div>
                     <div id='role' className='user__role'>Role</div>
@@ -449,7 +448,6 @@ const AdminSettings = () => {
                                 required
                             />
                         </form>
-                        {error && <p>{error}</p>}
                         <div className='modal__controls'>
                             <button type='submit' form='password-form' aria-label='Delete'></button>
                             <button type='button' aria-label='Cancel' onClick={() => {
@@ -562,7 +560,41 @@ const AdminSettings = () => {
                             {(!theme.version || !upToDateThemes[index]?.version || theme.version === upToDateThemes[index]?.version) ?
                                 <button disabled>No update available</button>
                                 :
-                                <button>{`Download ${upToDateThemes[index]?.version}`}</button>
+                                <button
+                                    onClick={() => {
+                                        const updateTheme = async () => {
+                                            try {
+                                                globalStateDispatch({
+                                                    type: "add loading tasks",
+                                                    task: `Updating ${theme.slug} theme`
+                                                })
+                                                const response = await fetch(`${backendAddress}/theme/${theme.slug}`, {
+                                                    method: "POST",
+                                                    credentials: "include",
+                                                });
+
+                                                const data = await response.json();
+
+                                                globalStateDispatch({
+                                                    type: "remove loading tasks",
+                                                    task: `Updating ${theme.slug} theme`
+                                                })
+
+                                                if (!response.ok) {
+                                                    throw new Error(data.error || data.message || "Updating theme failed");
+                                                }
+
+                                                window.location.reload();
+                                            } catch (err: any) {
+                                                if (typeof err.message === "string") setError(err.message);
+                                            }
+                                        }
+
+                                        updateTheme();
+                                    }}
+                                >
+                                    {`Download ${upToDateThemes[index]?.version}`}
+                                </button>
                             }
                         </div>
                     </li>

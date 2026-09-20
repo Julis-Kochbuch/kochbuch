@@ -28,7 +28,7 @@ const GeneralSettings = () => {
             setError("");
 
             try {
-                const response = await fetch(`${backendAddress}/user/theme`, {
+                const response = await fetch(`${backendAddress}/theme`, {
                     method: "GET",
                     credentials: "include",
                 });
