@@ -11,8 +11,8 @@ COPY backend/package*.json ./backend/
 RUN npm ci
 
 COPY common ./common
-COPY --exclude=src/uploads backend ./backend
-COPY backend/src/uploads ./uploads
+COPY backend ./backend
+COPY themes ./uploads/themes
 
 RUN npm run build -w @kochbuch/common
 
@@ -40,7 +40,7 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/common/dist ./common/dist
-COPY themes ./uploads
+COPY themes ./uploads/themes
 
 WORKDIR /app/backend
 
