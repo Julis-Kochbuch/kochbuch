@@ -50,6 +50,8 @@ body {
 
 .loader__wrapper {
     position: fixed !important;
+
+    cursor: wait !important;
 }
 
 :where(.loader__wrapper) {
@@ -104,6 +106,10 @@ body {
 
 button {
     cursor: pointer !important;
+}
+
+button[disabled] {
+    cursor: not-allowed !important;
 }
 
 :where(button) {
@@ -186,10 +192,14 @@ input[type=number] {
 }
 
 :where(h2) {
-    margin-bottom: .5rem;
+    margin-block: 1rem .5rem;
 
     font-size: 1.25em;
     text-align: center;
+}
+
+:where(h2:first-child) {
+    margin-top: 0;
 }
 
 :where(.empty) {

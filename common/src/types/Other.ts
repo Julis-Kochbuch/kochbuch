@@ -1,4 +1,6 @@
 export interface Theme {
     slug: string;
-    files: string[]
+    version?: string;
+    update_url?: string;
+    files: string[];
 }

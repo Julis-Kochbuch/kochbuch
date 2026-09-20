@@ -23,6 +23,10 @@
     scrollbar-width: thin;
 }
 
+:where(.settings__menu + h2) {
+    margin-top: 0;
+}
+
 .settings__menu-item a {
     display: block !important;
     width: max-content !important;
@@ -45,11 +49,11 @@
     gap: 1em .4ch;
 }
 
-:where(.settings__content:not(.settings-admin) > :nth-child(odd)) {
+:where(.settings__content:not(.settings-admin-userlist) > :nth-child(odd)) {
     text-align: right;
 }
 
-:where(.settings__content:not(.settings-admin) > :nth-child(even)) {
+:where(.settings__content:not(.settings-admin-userlist) > :nth-child(even)) {
     text-align: left;
 }
 
@@ -58,36 +62,36 @@
     justify-self: center;
 }
 
-.settings-admin {
+.settings-admin-userlist {
     display: grid !important;
     grid-template-columns: 4fr 3fr auto !important;
 }
 
-:where(.settings-admin) {
+:where(.settings-admin-userlist) {
     gap: 1em .4ch;
 }
 
-.settings-admin .user-head {
+.settings-admin-userlist .user-head {
     position: sticky !important;
 }
 
-:where(.settings-admin .user-head) {
+:where(.settings-admin-userlist .user-head) {
     top: 3em;
 
     background-color: white;
     font-weight: bold;
 }
 
-.settings-admin .user,
-.settings-admin .user form {
+.settings-admin-userlist .user,
+.settings-admin-userlist .user form {
     display: grid !important;
     grid-column: span 3 !important;
     justify-items: start !important;
-    
+
     grid-template-columns: subgrid !important;
 }
 
-.settings-admin input {
+.settings-admin-userlist input {
     field-sizing: content !important;
 }
 

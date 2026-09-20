@@ -261,7 +261,7 @@
 }
 
 @media (orientation: landscape) and (min-width: 1000px) {
-    :where(.recipe-image) {
+    :where(.recipe-image.image-0) {
         grid-column: span 3;
         justify-self: stretch;
     }

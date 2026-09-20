@@ -24,7 +24,7 @@
     position: relative !important;
 
     height: 100% !important;
-    
+
     box-sizing: border-box !important;
 }
 
@@ -59,7 +59,7 @@
 
 :where(.header__portal-menu__items) {
     align-items: end;
-    
+
     top: 3em;
 
     max-width: 100%;
@@ -73,7 +73,7 @@
         inset 2px 0px 0px 0px gray,
         inset 0px -2px 0px 0px gray,
         inset -2px 0px 0px 0px gray;
-    
+
     box-sizing: border-box;
 }
 

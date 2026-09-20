@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
 
-import { type User } from '@kochbuch/common';
+import { type User, type Theme } from '@kochbuch/common';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
 import backendAddress from '../../utils/BackendAddress';
+
+type ThemeUpdate =
+    Omit<Theme, "files" | "update_url" | "version"
+    > & {
+        version: string;
+        download_url: string;
+    }
 
 const AdminSettings = () => {
     const globalState = useGlobalState();
     const globalStateDispatch = useGlobalStateDispatch();
 
     const [users, setUsers] = useState<User[]>([]);
+    const [currentThemes, setCurrentThemes] = useState<Theme[]>([]);
+    const [upToDateThemes, setUpToDateThemes] = useState<(ThemeUpdate | undefined)[]>([]);
     const [currentlyEditting, setCurrentlyEditting] = useState<number>();
     const [name, setName] = useState<string>();
     const [role, setRole] = useState<number>();
@@ -48,7 +57,76 @@ const AdminSettings = () => {
                 setLoading(false);
             }
         };
+
+        const fetchThemes = async () => {
+            setLoading(true);
+            setError("");
+
+            try {
+                const response = await fetch(`${backendAddress}/user/theme`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || "Fetching themes failed");
+                }
+
+                const themeSlugs: string[] = data.map((themeData: { slug: string }) => { return themeData.slug });
+
+                const currentThemesData = await Promise.all(
+                    themeSlugs.map(async (slug) => {
+                        const response = await fetch(`/uploads/themes/${slug}/theme.json`, {
+                            method: "GET",
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.error || data.message || "Fetching theme data failed");
+                        }
+
+                        return data as Theme;
+                    })
+                );
+
+                setCurrentThemes(currentThemesData);
+
+                const upToDateThemeData = await Promise.all(
+                    currentThemesData.map(async (theme) => {
+                        if (!theme.update_url) return;
+
+                        const response = await fetch(`${theme.update_url}`, {
+                            method: "GET",
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.error || data.message || "Fetching theme data failed");
+                        }
+
+                        return data as ThemeUpdate;
+                    })
+                );
+
+                setUpToDateThemes(upToDateThemeData);
+
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Unexpected error";
+                setError(message);
+            } finally {
+                setLoading(false);
+                console.log(JSON.stringify(currentThemes));
+                console.log(JSON.stringify(upToDateThemes));
+            }
+        };
+
         fetchUsers();
+        fetchThemes();
     }, []);
 
     const handleDelete = async (e: React.SyntheticEvent<HTMLFormElement>, userId: number, index: number) => {
@@ -274,7 +352,8 @@ const AdminSettings = () => {
 
     return (
         <>
-            <ul className='settings-admin'>
+            <h2>Manage Users</h2>
+            <ul className='settings-admin-userlist'>
                 {error != "" && <p>{error}</p>}
                 <div className='user user-head'>
                     <div id='username' className='user__name'>Username</div>
@@ -468,6 +547,27 @@ const AdminSettings = () => {
                     </div>
                 </Modal>
             }
+            <h2>Manage Themes</h2>
+            <ul className='settings-admin-userlist'>
+                {error != "" && <p>{error}</p>}
+                <div className='user user-head'>
+                    <div id='theme' className='user__name'>Theme</div>
+                    <div id='version' className='user__role'>Version</div>
+                </div>
+                {currentThemes.map((theme, index) => (
+                    <li className='user'>
+                        <div className='user__name' aria-labelledby='theme'>{theme.slug}</div>
+                        <div className='user__role' aria-labelledby='version'>{theme.version ?? ""}</div>
+                        <div className='user__controls'>
+                            {(!theme.version || !upToDateThemes[index]?.version || theme.version === upToDateThemes[index]?.version) ?
+                                <button disabled>No update available</button>
+                                :
+                                <button>{`Download ${upToDateThemes[index]?.version}`}</button>
+                            }
+                        </div>
+                    </li>
+                ))}
+            </ul>
         </>
     )
 }
