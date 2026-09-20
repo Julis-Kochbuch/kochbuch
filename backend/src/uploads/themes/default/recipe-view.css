@@ -286,6 +286,10 @@
     background-color: currentColor;
 }
 
+.form-recipe .image-0::after {
+    margin-top: 1lh;
+}
+
 .recipe .recipe-author:not(.empty),
 .recipe .recipe-servings {
     display: flex;
