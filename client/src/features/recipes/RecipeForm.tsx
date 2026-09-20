@@ -11,7 +11,7 @@ import SortableFieldsetContext from '../../components/SortableFieldsetContext';
 import { type Recipe, type RecipeImage, type RecipeIngredient, type RecipeStep } from '@kochbuch/common';
 import Fraction from '../../utils/Fraction';
 import { type RecipeOutletContext } from '../../views/RecipeView.js';
-import { useGlobalState } from '../../utils/GlobalState.js';
+import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState.js';
 import { type Category } from './CategorySelector';
 import BackButton from '../../components/BackButton.js';
 import ImageForm, { type ImageWithFile } from './ImageForm.js';
@@ -22,6 +22,7 @@ import '../../assets/css/recipe.css';
 const RecipeForm = () => {
     const { recipe, disabled, navigateTarget, onFormSubmit } = useOutletContext<RecipeOutletContext>();
     const globalState = useGlobalState();
+    const dispatchGlobalState = useGlobalStateDispatch();
 
     const navigate = useNavigate();
 
@@ -98,10 +99,7 @@ const RecipeForm = () => {
 
     const handleImagesSubmit = async (recipeId: string) => {
         try {
-            if (images.length === 0) {
-                console.log(`no images found`);
-                return;
-            };
+            if (images.length === 0) return;
 
             let anyImageChanged = false;
 
@@ -117,10 +115,12 @@ const RecipeForm = () => {
                 anyImageChanged = true;
             })
 
-            if (!anyImageChanged) {
-                console.log(`no images changed`);
-                return;
-            };
+            if (!anyImageChanged) return;
+
+            dispatchGlobalState({
+                type: "add loading tasks",
+                task: "Uploading images"
+            });
 
             const response = await fetch(`${backendAddress}/uploads/recipe/${recipeId}`, {
                 method: "POST",
@@ -129,6 +129,11 @@ const RecipeForm = () => {
             });
 
             const data = await response.json();
+
+            dispatchGlobalState({
+                type: "remove loading tasks",
+                task: "Uploading images"
+            });
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Uploading images failed");
@@ -145,10 +150,7 @@ const RecipeForm = () => {
             onSubmit={(e) => {
                 onFormSubmit?.(e, newRecipe())
                     .then(id => {
-                        if (id === "-1") {
-                            console.log(`no id found: ${id}`);
-                            return;
-                        };
+                        if (id === "-1") return;
 
                         handleImagesSubmit(id).then(() => {
                             if (!navigateTarget) return;

@@ -19,6 +19,7 @@ type GlobalState = {
         headerMenu?: RefObject<HTMLElement | null>;
     }
     modalsOpen: number;
+    loadingTasks: string[];
 };
 
 type GlobalStateReducerAction =
@@ -49,6 +50,14 @@ type GlobalStateReducerAction =
     | {
         type: "set theme",
         theme: Theme | string
+    }
+    | {
+        type: "add loading tasks",
+        task: string | string[]
+    }
+    | {
+        type: "remove loading tasks",
+        task: string | string[]
     }
 
 
@@ -130,6 +139,20 @@ export function globalStateReducer(state: GlobalState, action: GlobalStateReduce
                     name: action.name ?? state.user.name,
                 },
             };
+        };
+        case "add loading tasks": {
+            return {
+                ...state,
+                loadingTasks: state.loadingTasks.concat(action.task),
+            };
+        };
+        case "remove loading tasks": {
+            const tasksSet = new Set(Array.isArray(action.task) ? action.task : [action.task]);
+
+            return {
+                ...state,
+                loadingTasks: state.loadingTasks.filter(task => !tasksSet.has(task)),
+            };
         }
     }
 }
@@ -143,7 +166,14 @@ type GlobalStateProviderProps = {
 };
 
 export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
-    const [globalState, dispatchGlobalState] = useReducer(globalStateReducer, { authStatus: "loading", modalsOpen: 0 } as GlobalState);
+    const [globalState, dispatchGlobalState] = useReducer(globalStateReducer, {
+        authStatus: "loading",
+        user: {},
+        settings: {},
+        refs: {},
+        modalsOpen: 0,
+        loadingTasks: []
+    } as GlobalState);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -153,12 +183,22 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                     authStatus: "loading"
                 });
 
+                dispatchGlobalState({
+                    type: "add loading tasks",
+                    task: "Checking authentification"
+                });
+
                 const response = await fetch(`${backendAddress}/user/me`, {
                     method: "GET",
                     credentials: "include",
                 });
 
                 const data = await response.json();
+
+                dispatchGlobalState({
+                    type: "remove loading tasks",
+                    task: "Checking authentification"
+                });
 
                 if (!response.ok) {
                     dispatchGlobalState({
@@ -169,7 +209,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
                         type: "set theme",
                         theme: "default"
                     });
-                    throw new Error(data.error || data.message || "User data failed");
+                    throw new Error(data.error || data.message || "Fetching user data failed");
                 }
 
                 dispatchGlobalState({

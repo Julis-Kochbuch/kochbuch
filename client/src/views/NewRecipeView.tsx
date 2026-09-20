@@ -5,12 +5,13 @@ import { createPortal } from "react-dom";
 import { type Recipe } from '@kochbuch/common';
 import { type RecipeOutletContext } from './RecipeView.js';
 import BackButton from '../components/BackButton';
-import { useGlobalState } from '../utils/GlobalState.js';
+import { useGlobalState, useGlobalStateDispatch } from '../utils/GlobalState.js';
 import Modal from '../components/Modal.js';
 import backendAddress from '../utils/BackendAddress.js';
 
 const NewRecipeView = () => {
     const globalState = useGlobalState();
+    const dispatchGlobalState = useGlobalStateDispatch();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -19,6 +20,11 @@ const NewRecipeView = () => {
         e.preventDefault();
         setLoading(true);
         setError("");
+
+        dispatchGlobalState({
+            type: "add loading tasks",
+            task: "Creating recipe"
+        });
 
         try {
             const response = await fetch(`${backendAddress}/recipe/`, {
@@ -31,6 +37,11 @@ const NewRecipeView = () => {
             });
 
             const data = await response.json();
+
+            dispatchGlobalState({
+                type: "remove loading tasks",
+                task: "Creating recipe"
+            });
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Creating recipe failed");

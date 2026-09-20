@@ -4,7 +4,7 @@ import { Link, useOutletContext, useNavigate } from 'react-router'
 
 import { type RecipeOutletContext } from '../../views/RecipeView.js';
 import ShareButton from './ShareButton.js';
-import { useGlobalState } from '../../utils/GlobalState.js';
+import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState.js';
 import RecipeImage from './RecipeImage.js';
 import backendAddress from '../../utils/BackendAddress.js';
 
@@ -12,6 +12,7 @@ const Recipe = () => {
     const { recipe } = useOutletContext<RecipeOutletContext>()
 
     const globalState = useGlobalState();
+    const dispatchGlobalState = useGlobalStateDispatch();
 
     const navigate = useNavigate();
 
@@ -19,6 +20,11 @@ const Recipe = () => {
 
     const handleDelete = async () => {
         try {
+            dispatchGlobalState({
+                type: "add loading tasks",
+                task: "Deleting recipe"
+            });
+
             const response = await fetch(`${backendAddress}/recipe/${recipe?.id}`, {
                 method: "DELETE",
                 headers: {
@@ -28,6 +34,11 @@ const Recipe = () => {
             });
 
             const data = await response.json();
+
+            dispatchGlobalState({
+                type: "remove loading tasks",
+                task: "Deleting recipe"
+            });
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Modifying recipe failed");

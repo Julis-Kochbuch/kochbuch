@@ -9,6 +9,7 @@ import Recipe from './features/recipes/Recipe';
 import RecipeForm from './features/recipes/RecipeForm';
 import { GlobalStateProvider } from './utils/GlobalState';
 import Header from './components/Header';
+import LoadingScreen from './components/LoadingScreen';
 import SettingsView from './views/SettingsView';
 import AccountSettings from './features/user/AccountSettings';
 import AdminSettings from './features/user/AdminSettings';
@@ -18,13 +19,14 @@ function App() {
     return (
         <GlobalStateProvider>
             <Header />
+            <LoadingScreen />
             <Routes>
                 <Route index element={<Navigate to="/login" replace />} />
                 <Route path="login" element={<Login />} />
 
                 <Route element={<ProtectedArea />}>
                     <Route path="overview" element={<AllRecipesView />} />
-                    
+
                     <Route path="recipe">
                         <Route path="new" element={<NewRecipeView />}>
                             <Route index element={<RecipeForm />} />

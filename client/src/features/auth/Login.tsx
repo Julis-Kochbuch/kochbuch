@@ -22,6 +22,11 @@ const Login = () => {
         setLoading(true);
         setError("");
 
+        dispatchGlobalState({
+            type: "add loading tasks",
+            task: "Logging in"
+        });
+
         try {
             dispatchGlobalState({
                 type: "set auth status",
@@ -38,6 +43,11 @@ const Login = () => {
             });
 
             const data = await response.json();
+
+            dispatchGlobalState({
+                type: "remove loading tasks",
+                task: "Logging in"
+            });
 
             if (!response.ok) {
                 dispatchGlobalState({

@@ -4,19 +4,27 @@ import { Link } from 'react-router';
 import { type RecipeListByCategory } from '@kochbuch/common';
 import Modal from '../components/Modal';
 import backendAddress from '../utils/BackendAddress';
+import { useGlobalStateDispatch } from '../utils/GlobalState.js';
 
 import '../assets/css/recipe-list.css';
 
 const RecipeView = () => {
+    const dispatchGlobalState = useGlobalStateDispatch();
+
     const [categories, setCategories] = useState<RecipeListByCategory[]>([]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchRecipe = async () => {
+        const fetchRecipes = async () => {
             setLoading(true);
             setError("");
+
+            dispatchGlobalState({
+                type: "add loading tasks",
+                task: "Fetching recipes"
+            });
 
             try {
                 const response = await fetch(`${backendAddress}/recipe/`, {
@@ -25,6 +33,11 @@ const RecipeView = () => {
                 });
 
                 const data = await response.json();
+
+                dispatchGlobalState({
+                    type: "remove loading tasks",
+                    task: "Fetching recipes"
+                });
 
                 if (!response.ok) {
                     throw new Error(data.error || data.message || "Fetching recipes failed");
@@ -39,7 +52,7 @@ const RecipeView = () => {
                 setLoading(false);
             }
         };
-        fetchRecipe();
+        fetchRecipes();
     }, []);
 
     return (

@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 
 import { type Recipe } from '@kochbuch/common';
 import BackButton from '../components/BackButton';
-import { useGlobalState } from '../utils/GlobalState';
+import { useGlobalState, useGlobalStateDispatch } from '../utils/GlobalState';
 import Modal from '../components/Modal';
 import backendAddress from '../utils/BackendAddress';
 
@@ -31,6 +31,7 @@ const RecipeView = () => {
     let { recipeId } = useParams();
 
     const globalState = useGlobalState();
+    const dispatchGlobalState = useGlobalStateDispatch();
 
     const [recipe, setRecipe] = useState<Recipe>();
 
@@ -42,6 +43,11 @@ const RecipeView = () => {
             setLoading(true);
             setError("");
 
+            dispatchGlobalState({
+                type: "add loading tasks",
+                task: "Loading recipe"
+            });
+
             try {
                 const response = await fetch(`${backendAddress}/recipe/${recipeId}`, {
                     method: "GET",
@@ -50,8 +56,13 @@ const RecipeView = () => {
 
                 const data = await response.json();
 
+                dispatchGlobalState({
+                    type: "remove loading tasks",
+                    task: "Loading recipe"
+                });
+
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching recipe failed");
+                    throw new Error(data.error || data.message || "Load;ing recipe failed");
                 }
 
                 setRecipe(data as Recipe);
@@ -71,6 +82,11 @@ const RecipeView = () => {
         setLoading(true);
         setError("");
 
+        dispatchGlobalState({
+            type: "add loading tasks",
+            task: "Saving changes"
+        });
+
         try {
             if (!recipeId) {
                 throw new Error("Modifying recipe failed");
@@ -86,6 +102,11 @@ const RecipeView = () => {
             });
 
             const data = await response.json();
+
+            dispatchGlobalState({
+                type: "remove loading tasks",
+                task: "Saving changes"
+            });
 
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Modifying recipe failed");
