@@ -40,7 +40,7 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/common/dist ./common/dist
-COPY backend/src/uploads ./uploads
+COPY themes ./uploads
 
 WORKDIR /app/backend
 

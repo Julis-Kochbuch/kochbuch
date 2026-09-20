@@ -3,4 +3,5 @@ dist
 *.md
 .git
 .gitignore
+.gitmodules
 .vscode
