@@ -1,0 +1,35 @@
+.categories {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+}
+
+:where(.categories) {
+    gap: 1em;
+}
+
+.categories .category,
+.categories .category form {
+    display: grid !important;
+    grid-column: span 2 !important;
+
+    grid-template-columns: subgrid !important;
+}
+
+.categories .category input {
+    field-sizing: content !important;
+}
+
+.category__controls {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-self: stretch !important;
+    justify-content: space-evenly !important;
+}
+
+:where(.category__controls) {
+    column-gap: 1em;
+}
+
+:where(.categories + .add-button) {
+    margin-block: 1em;
+}

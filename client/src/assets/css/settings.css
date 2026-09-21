@@ -1,0 +1,114 @@
+.settings__wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.settings__menu {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+
+    list-style: none !important;
+
+    overflow-x: auto !important;
+}
+
+:where(.settings__menu) {
+    gap: 1em;
+
+    margin-bottom: .5em;
+    padding-block: .5em;
+    border-bottom: solid 2px gray;
+
+    scrollbar-width: thin;
+}
+
+:where(.settings__menu + h2) {
+    margin-top: 0;
+}
+
+.settings__menu-item a {
+    display: block !important;
+    width: max-content !important;
+}
+
+:where(.settings__menu-item a) {
+    text-decoration: inherit;
+}
+
+:where(.settings__menu-item a.active) {
+    font-weight: bold;
+}
+
+.settings__content {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+}
+
+:where(.settings__content) {
+    gap: 1em .4ch;
+}
+
+:where(.settings__content:not(.settings-admin-userlist) > :nth-child(odd)) {
+    text-align: right;
+}
+
+:where(.settings__content:not(.settings-admin-userlist) > :nth-child(even)) {
+    text-align: left;
+}
+
+:where(.settings__content button[type=submit]) {
+    grid-column: span 2;
+    justify-self: center;
+}
+
+.settings-admin-userlist {
+    display: grid !important;
+    grid-template-columns: 4fr 3fr auto !important;
+}
+
+:where(.settings-admin-userlist) {
+    gap: 1em .4ch;
+}
+
+.settings-admin-userlist .user-head {
+    position: sticky !important;
+}
+
+:where(.settings-admin-userlist .user-head) {
+    top: 3em;
+
+    background-color: white;
+    font-weight: bold;
+}
+
+.settings-admin-userlist .user,
+.settings-admin-userlist .user form {
+    display: grid !important;
+    grid-column: span 3 !important;
+    justify-items: start !important;
+
+    grid-template-columns: subgrid !important;
+}
+
+.settings-admin-userlist input {
+    field-sizing: content !important;
+}
+
+.settings__controls {
+    justify-self: center;
+    grid-column: span 2;
+}
+
+.settings__controls,
+.user__controls {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-self: stretch !important;
+    justify-content: space-evenly !important;
+}
+
+:where(.settings__controls),
+:where(.user__controls) {
+    column-gap: 1em;
+}

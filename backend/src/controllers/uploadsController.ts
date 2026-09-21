@@ -1,0 +1,88 @@
+import { type Request, type Response } from 'express';
+import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
+import fs from "fs/promises";
+
+import * as db from '../db/index.js';
+
+export const uploadDir = "/app/uploads";
+
+const uploadRecipeImage = async (req: Request<{ id: string }, {}, { slots: number | number[] }>, res: Response<{ message: string }>) => {
+    const { id } = req.params;
+
+    const authorization_result = await db.query(`
+        SELECT (a.role = 10) AS is_authorized
+        FROM access_permissions a
+        WHERE a.recipe_id = $1 AND a.key_id = $2;
+        `,
+        [id, req.session.apiKeyId]
+    );
+
+    if (!authorization_result.rows[0]?.is_authorized) {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    const files: Express.Multer.File[] = Array.isArray(req.files)
+        ? req.files
+        : Object.values(req.files ?? {}).flat();
+    const slots = Array.isArray(req.body.slots)
+        ? req.body.slots
+        : [req.body.slots];
+
+    if (!(slots.length === files.length)) {
+        return res.status(400).json({ message: 'Bad request' });
+    }
+
+    for (const [i, file] of files.entries()) {
+        const type = await fileTypeFromBuffer(file.buffer);
+
+        if (!type) {
+            return res.status(400).json({ message: 'Unknown file' });
+        }
+
+        if (!["image/png", "image/jpeg", "image/webp"].includes(type.mime)) {
+            return res.status(400).json({ message: 'Wrong file type' });
+        }
+
+        const image = await sharp(file.buffer)
+            .resize({
+                width: 1080,
+                height: 1080,
+                fit: "inside",
+                withoutEnlargement: true
+            })
+            .webp()
+            .toBuffer();
+
+        await fs.mkdir(`${uploadDir}/images/recipe-${id}`, { recursive: true });
+        await fs.writeFile(`${uploadDir}/images/recipe-${id}/${slots[i]}.webp`, image);
+    }
+
+    res.status(200).json({ message: 'Upload successfull' });
+}
+
+const recipeImageGet = async (req: Request<{ recipe_id: string, image_name: string }>, res: Response<{ message: string }>) => {
+    const { recipe_id, image_name } = req.params;
+
+    const authorization_result = await db.query(`
+        SELECT (a.role >= 0) AS is_authorized
+        FROM access_permissions a
+        WHERE a.recipe_id = $1 AND a.key_id = $2;
+        `,
+        [recipe_id, req.session.apiKeyId]
+    );
+
+    if (!authorization_result.rows[0]?.is_authorized) {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    const file = `${uploadDir}/images/recipe-${recipe_id}/${image_name}`;
+
+    res.sendFile(file, err => {
+        if (err) {
+            return res.status(404).json({ message: 'Image not found' });
+        }
+    });
+}
+
+export default { uploadRecipeImage, recipeImageGet }

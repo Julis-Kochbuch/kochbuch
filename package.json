@@ -1,0 +1,12 @@
+{
+    "name": "kochbuch",
+    "private": true,
+    "workspaces": [
+        "common",
+        "backend",
+        "client"
+    ],
+    "devDependencies": {
+        "typescript": "^7.0.2"
+    }
+}

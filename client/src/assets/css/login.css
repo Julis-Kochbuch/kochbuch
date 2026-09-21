@@ -1,0 +1,22 @@
+.login-form {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+}
+
+:where(.login-form) {
+    gap: 1em;
+}
+
+.login-form > fieldset {
+    display: grid !important;
+    grid-column: span 2;
+    grid-template-columns: subgrid !important;
+}
+
+:where(.login-form > fieldset) {
+    gap: inherit;
+}
+
+:where(.login-form label) {
+    text-align: right;
+}
