@@ -98,5 +98,5 @@ You have to provide secrets (passwords) to Docker. Here's how to do it:
 Once you've completed the setup, you can start the entire application by doing
 
 ```bash
-docker compose -f compose.yaml -f compose.production.yaml up -d
+docker compose -f compose.yaml -f compose.prod.yaml up -d
 ```
