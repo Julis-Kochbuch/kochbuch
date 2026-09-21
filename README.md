@@ -56,7 +56,7 @@ You have to provide secrets (passwords) to Docker. Here's how to do it:
     ```
 6. Now run this to protect the secrets:
     ```bash
-    chmod 600 secrets/*
+    chmod 644 secrets/*
     ```
 
 > [!NOTE]  
