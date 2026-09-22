@@ -275,6 +275,7 @@ input[type=number] {
 }
 
 .drag-button {
+    touch-action: none !important;
     cursor: grab !important;
 }
 
