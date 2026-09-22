@@ -137,6 +137,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
                         <label htmlFor={"image-caption-" + index} id={"image-caption-label-" + index}>Caption:</label>
                         <input
                             type='text'
+                            autoComplete="off"
                             aria-labelledby={"image-caption-label-" + index}
                             className='recipe-image__text'
                             value={value.caption ?? undefined}

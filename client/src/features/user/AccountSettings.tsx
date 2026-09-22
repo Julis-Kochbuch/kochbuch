@@ -74,6 +74,8 @@ const AccountSettings = () => {
                     <input
                         type="text"
                         id="username"
+                        autoComplete="off"
+                        autoCapitalize="off"
                         maxLength={32}
                         onChange={(e) => setUsername(e.target.value)}
                         value={username}
@@ -82,6 +84,7 @@ const AccountSettings = () => {
                     <input
                         type="password"
                         id="new-password"
+                        autoComplete="new-password"
                         onChange={(e) => setNewPassword(e.target.value)}
                         value={newPassword}
                     />
@@ -89,6 +92,7 @@ const AccountSettings = () => {
                     <input
                         type="password"
                         id="current-password"
+                        autoComplete="current-password"
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         value={currentPassword}
                         required

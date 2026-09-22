@@ -364,6 +364,8 @@ const AdminSettings = () => {
                             <form onSubmit={(e) => handleSubmit(e, user.id, index)}>
                                 <input
                                     type='text'
+                                    autoComplete='off'
+                                    autoCapitalize='off'
                                     className='user__name'
                                     maxLength={32}
                                     aria-labelledby='username'
@@ -443,6 +445,7 @@ const AdminSettings = () => {
                             <input
                                 type="password"
                                 id="password"
+                                autoComplete="current-password"
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
                                 required
@@ -468,6 +471,7 @@ const AdminSettings = () => {
                             <input
                                 type="password"
                                 id="new-password"
+                                autoComplete="new-password"
                                 onChange={(e) => setPassword(e.target.value)}
                                 value={password}
                                 required
@@ -476,6 +480,7 @@ const AdminSettings = () => {
                             <input
                                 type="password"
                                 id="admin-password"
+                                autoComplete="current-password"
                                 onChange={(e) => setAdminPassword(e.target.value)}
                                 value={adminPassword}
                                 required
@@ -517,6 +522,8 @@ const AdminSettings = () => {
                         <input
                             type="text"
                             id="new-username"
+                            autoComplete="off"
+                            autoCapitalize="off"
                             onChange={(e) => setName(e.target.value)}
                             value={name}
                         />
@@ -524,6 +531,7 @@ const AdminSettings = () => {
                         <input
                             type="password"
                             id="password"
+                            autoComplete="new-password"
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                         />

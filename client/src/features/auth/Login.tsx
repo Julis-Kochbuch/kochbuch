@@ -103,6 +103,8 @@ const Login = () => {
                         <input
                             type="text"
                             id="username"
+                            autoComplete="username"
+                            autoCapitalize="off"
                             placeholder="Enter Username here"
                             maxLength={32}
                             value={username}
@@ -113,6 +115,7 @@ const Login = () => {
                         <input
                             type="password"
                             id="password"
+                            autoComplete="current-password"
                             placeholder="Enter Password here"
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}

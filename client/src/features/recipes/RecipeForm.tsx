@@ -175,6 +175,7 @@ const RecipeForm = () => {
                         <input
                             type="text"
                             className="input-recipe-name"
+                            autoComplete="off"
                             id="recipe-name"
                             maxLength={64}
                             placeholder="New recipe"
