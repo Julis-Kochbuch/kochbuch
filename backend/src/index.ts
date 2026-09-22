@@ -37,6 +37,7 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 30 * 2,
             httpOnly: true,
             secure: process.env.MODE === "prod",
             sameSite: 'lax'

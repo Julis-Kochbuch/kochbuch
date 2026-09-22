@@ -14,6 +14,7 @@ const StepForm = ({ value, index, setAction }: FieldsetFormProps<Step>) => {
             </div>
             <textarea
                 id="text"
+                autoComplete="off"
                 onChange={(e) => {
                     setAction(prev => {
                         const next = [...prev];

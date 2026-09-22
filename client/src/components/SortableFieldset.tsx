@@ -1,5 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import type { UniqueIdentifier } from "@dnd-kit/core";
+import { CSS } from '@dnd-kit/utilities';
 
 type SortableFieldsetProps = {
     id: UniqueIdentifier;
@@ -15,9 +16,7 @@ const SortableFieldset = ({ id, children, className }: SortableFieldsetProps) =>
             ref={setNodeRef}
             className={'sortable-fieldset ' + className}
             style={{
-                transform: transform
-                    ? `translateY(${transform.y}px)`
-                    : undefined,
+                transform: CSS.Transform.toString(transform),
                 transition,
             }}
         >

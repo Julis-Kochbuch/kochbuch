@@ -197,6 +197,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                                     <form id='category-form' onSubmit={(e) => handleCategorySubmit(e, category.id, index)}>
                                         <input
                                             type='text'
+                                            autoComplete="off"
                                             className='category__name'
                                             maxLength={32}
                                             value={newCategory}

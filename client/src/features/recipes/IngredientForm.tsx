@@ -47,6 +47,8 @@ const IngredientForm = ({ value, index, setAction }: FieldsetFormProps<Ingredien
             <input
                 type="text"
                 id="unit"
+                autoComplete="off"
+                autoCapitalize="off"
                 maxLength={16}
                 placeholder='Unit'
                 title='Unit'
@@ -65,6 +67,7 @@ const IngredientForm = ({ value, index, setAction }: FieldsetFormProps<Ingredien
             <input
                 type="text"
                 id="text"
+                autoComplete="off"
                 maxLength={64}
                 placeholder='Ingredient'
                 title='Ingredient'
@@ -84,6 +87,8 @@ const IngredientForm = ({ value, index, setAction }: FieldsetFormProps<Ingredien
             <textarea
                 id="comment"
                 placeholder='Comment'
+                autoComplete="off"
+                autoCapitalize="off"
                 title='Comment'
                 onChange={(e) => {
                     setAction(prev => {
