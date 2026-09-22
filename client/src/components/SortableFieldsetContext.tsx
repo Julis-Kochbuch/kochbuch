@@ -1,5 +1,6 @@
-import { DndContext, type DragEndEvent, type UniqueIdentifier } from '@dnd-kit/core';
+import { DndContext, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent, type UniqueIdentifier } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { JSX } from 'react';
 
 import type React from 'react';
@@ -15,6 +16,21 @@ export type SortableFieldsetContextProps<T extends WithId> = {
 };
 
 const SortableFieldsetContext = <T extends WithId,>({ value, setAction, children }: SortableFieldsetContextProps<T>) => {
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        }),
+    );
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
@@ -29,7 +45,11 @@ const SortableFieldsetContext = <T extends WithId,>({ value, setAction, children
     };
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext
+            modifiers={[restrictToVerticalAxis]}
+            sensors={sensors}
+            onDragEnd={handleDragEnd}
+        >
             <SortableContext
                 items={value.map(value => value.id)}
                 strategy={verticalListSortingStrategy}
