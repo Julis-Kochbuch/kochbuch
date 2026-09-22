@@ -1,16 +1,18 @@
-.login-form {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+body:has(.login-form) {
+    align-content: center !important;
+}
+
+:where(#root:has(.login-form)) {
+    margin-top: 0 !important;
 }
 
 :where(.login-form) {
     gap: 1em;
 }
 
-.login-form > fieldset {
+.login-form>fieldset {
     display: grid !important;
-    grid-column: span 2;
-    grid-template-columns: subgrid !important;
+    grid-template-columns: 1fr 1fr !important;
 }
 
 :where(.login-form > fieldset) {
