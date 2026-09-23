@@ -4,6 +4,7 @@ import rateLimitConfig from './config/rateLimit.js';
 import cors from 'cors';
 import corsConfig from './config/cors.js';
 import session from 'express-session';
+import store from './config/redis.js';
 import waitPort from 'wait-port';
 import fs from "node:fs";
 
@@ -33,6 +34,7 @@ app.use(express.json());
 
 app.use(
     session({
+        store: store,
         secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
