@@ -36,10 +36,11 @@ app.use(
     session({
         store: store,
         secret: sessionSecret,
+        rolling: true,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 30 * 2,
+            maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true,
             secure: process.env.MODE === "prod",
             sameSite: 'lax'
