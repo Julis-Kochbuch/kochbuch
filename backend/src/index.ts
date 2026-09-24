@@ -4,6 +4,7 @@ import rateLimitConfig from './config/rateLimit.js';
 import cors from 'cors';
 import corsConfig from './config/cors.js';
 import session from 'express-session';
+import store from './config/redis.js';
 import waitPort from 'wait-port';
 import fs from "node:fs";
 
@@ -33,11 +34,13 @@ app.use(express.json());
 
 app.use(
     session({
+        store: store,
         secret: sessionSecret,
+        rolling: true,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 30 * 2,
+            maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true,
             secure: process.env.MODE === "prod",
             sameSite: 'lax'
