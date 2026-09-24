@@ -9,6 +9,10 @@ import RecipeImage from './RecipeImage.js';
 import backendAddress from '../../utils/BackendAddress.js';
 
 const Recipe = () => {
+    const formatter = new Intl.NumberFormat(undefined, {
+        maximumFractionDigits: 2,
+    });
+
     const { recipe } = useOutletContext<RecipeOutletContext>()
 
     const globalState = useGlobalState();
@@ -121,7 +125,7 @@ const Recipe = () => {
                 <ul>
                     {recipe?.ingredients.map((ingredient) => (
                         <li className='recipe-ingredient__wrapper recipe-ingredient__content'>
-                            {ingredient.amount ? ingredient.amount * servings / (recipe.servings ?? 1) : undefined} {ingredient.unit} {ingredient.text} {ingredient.comment && <em>{ingredient.comment}</em>}
+                            {ingredient.amount ? formatter.format(ingredient.amount * servings / (recipe.servings ?? 1)) : undefined} {ingredient.unit} {ingredient.text} {ingredient.comment && <em>{ingredient.comment}</em>}
                         </li>
                     ))}
                 </ul>
