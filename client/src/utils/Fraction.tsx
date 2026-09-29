@@ -44,6 +44,10 @@ class Fraction {
             return parseFloat(str);
         }
 
+        if (/^\d+(\,\d+)?$/.test(str)) {
+            return parseFloat(str.replace(',', '.'));
+        }
+
         if (/^\d+\s*\/\s*\d+$/.test(str)) {
             const [num, den] = str.split("/").map((s) => parseFloat(s.trim()));
 
