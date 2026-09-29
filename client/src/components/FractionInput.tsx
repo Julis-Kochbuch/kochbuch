@@ -20,7 +20,7 @@ const FractionInput = ({ value, ref, onValueChange, ...props }: FractionInputPro
             pattern={[
                 "^$",
                 "^\\d+(\\.\\d+)?$",
-                "^\\d+(\\,\\d+)?$",
+                "^\\d+(,\\d+)?$",
                 "^\\d+\\s*\\/\\s*\\d+$",
                 "^\\d+\\s+\\d+\\s*\\/\\s*\\d+$"
             ].join("|")}
