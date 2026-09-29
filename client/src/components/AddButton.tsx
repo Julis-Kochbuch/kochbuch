@@ -8,16 +8,19 @@ type AddButtonProps<T> =
         createItem: () => T;
         setAction: React.Dispatch<React.SetStateAction<T[]>>;
         className?: string;
+        onItemAdded?: (item: T) => void;
         onClick?: MouseEventHandler<HTMLButtonElement>;
         children?: string | React.ReactNode;
     }
 
-const AddButton = <T,>({ createItem, setAction, className, onClick, children, ...props } : AddButtonProps<T>) => {
+const AddButton = <T,>({ createItem, setAction, className, onItemAdded, onClick, children, ...props }: AddButtonProps<T>) => {
     return (
         <button
             type="button"
             onClick={(e) => {
-                setAction(items => [...items, createItem()]);
+                const newItem = createItem();
+                setAction(items => [...items, newItem]);
+                onItemAdded?.(newItem);
                 onClick?.(e);
             }}
             className={"add-button " + (className ?? "")}

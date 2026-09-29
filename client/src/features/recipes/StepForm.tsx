@@ -6,7 +6,7 @@ export type Step = {
     text: string;
 };
 
-const StepForm = ({ value, index, setAction }: FieldsetFormProps<Step>) => {
+const StepForm = ({ value, index, ref, setAction }: FieldsetFormProps<Step, HTMLTextAreaElement>) => {
     return (
         <div className='input-recipe-step__content recipe-step__content'>
             <div className='recipe-step-index'>
@@ -14,6 +14,7 @@ const StepForm = ({ value, index, setAction }: FieldsetFormProps<Step>) => {
             </div>
             <textarea
                 id="text"
+                ref={ref}
                 autoComplete="off"
                 onChange={(e) => {
                     setAction(prev => {
