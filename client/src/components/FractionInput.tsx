@@ -24,6 +24,7 @@ const FractionInput = ({ value, ref, onValueChange, ...props }: FractionInputPro
                 "^\\d+\\s*\\/\\s*\\d+$",
                 "^\\d+\\s+\\d+\\s*\\/\\s*\\d+$"
             ].join("|")}
+            inputMode="decimal"
             value={value?.valueAsString}
             onChange={onValueChange}
         />
