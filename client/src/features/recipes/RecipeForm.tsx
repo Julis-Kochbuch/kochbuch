@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router'
 
 import CategorySelector from './CategorySelector';
@@ -26,12 +26,22 @@ const RecipeForm = () => {
 
     const navigate = useNavigate();
 
+    const inputRefs = useRef<Map<number, HTMLElement>>(new Map());
+
     const [name, setName] = useState<string>("");
     const [category, setCategory] = useState<Category>();
     const [servings, setServings] = useState<string>();
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [steps, setSteps] = useState<Step[]>([]);
     const [images, setImages] = useState<ImageWithFile[]>([]);
+    const [focusedId, setFocusedId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (focusedId) {
+            inputRefs.current.get(focusedId)?.focus();
+            setFocusedId(null);
+        }
+    }, [focusedId, ingredients, steps]);
 
     useEffect(() => {
         if (recipe) {
@@ -229,6 +239,13 @@ const RecipeForm = () => {
                             >
                                 <IngredientForm
                                     index={index}
+                                    ref={(el) => {
+                                        if (el) {
+                                            inputRefs.current.set(ingredient.id, el);
+                                        } else {
+                                            inputRefs.current.delete(ingredient.id);
+                                        }
+                                    }}
                                     value={ingredient}
                                     setAction={setIngredients}
                                 />
@@ -245,6 +262,9 @@ const RecipeForm = () => {
                             id: Date.now(),
                             text: "",
                         })}
+                        onItemAdded={(item) => {
+                            setFocusedId(item.id);
+                        }}
                         setAction={setIngredients}
                         aria-label='Add an ingredient'
                         title='Add an ingredient'
@@ -264,6 +284,13 @@ const RecipeForm = () => {
                             >
                                 <StepForm
                                     index={index}
+                                    ref={(el) => {
+                                        if (el) {
+                                            inputRefs.current.set(step.id, el);
+                                        } else {
+                                            inputRefs.current.delete(step.id);
+                                        }
+                                    }}
                                     value={step}
                                     setAction={setSteps}
                                 />
@@ -280,6 +307,9 @@ const RecipeForm = () => {
                             id: Date.now(),
                             text: "",
                         })}
+                        onItemAdded={(item) => {
+                            setFocusedId(item.id);
+                        }}
                         setAction={setSteps}
                         aria-label='Add a step'
                         title='Add a step'

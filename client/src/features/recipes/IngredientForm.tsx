@@ -11,32 +11,22 @@ export type Ingredient = {
     comment?: string;
 };
 
-const IngredientForm = ({ value, index, setAction }: FieldsetFormProps<Ingredient>) => {
+const IngredientForm = ({ value, index, ref, setAction }: FieldsetFormProps<Ingredient, HTMLInputElement>) => {
     return (
         <div className='input-recipe-ingredient__content recipe-ingredient__content'>
             <FractionInput
                 id="amount"
+                ref={ref}
                 placeholder='Amount'
                 title='Amount'
                 onValueChange={(e) => {
                     setAction(prev => {
-                        console.log("onChange", JSON.stringify(e.target.value));
-                        console.log("updater");
                         const next = [...prev];
 
                         next[index] = {
                             ...next[index],
                             amount: new Fraction(e.target.value),
                         };
-
-                        console.log(
-                            "stored string:",
-                            JSON.stringify(next[index].amount?.valueAsString)
-                        );
-                        console.log(
-                            "stored value:",
-                            JSON.stringify(next[index].amount?.valueAsNumber)
-                        );
 
                         return next;
                     });
