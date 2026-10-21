@@ -60,7 +60,9 @@ services:
     image: elestio/pgadmin:latest
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        restart: true
     environment:
       - PGADMIN_DEFAULT_EMAIL=login@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=password
