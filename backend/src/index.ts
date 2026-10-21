@@ -16,10 +16,6 @@ import themeRoutes from './routes/themeRoutes.js';
 
 import { checkThemes } from './utils/checkThemes.js';
 
-const sessionSecret = fs
-    .readFileSync("/run/secrets/session_secret", "utf8")
-    .trim();
-
 console.log("Server starting...");
 
 const app = express();
@@ -35,7 +31,7 @@ app.use(express.json());
 app.use(
     session({
         store: store,
-        secret: sessionSecret,
+        secret: process.env.SESSION_SECRET!,
         rolling: true,
         resave: false,
         saveUninitialized: false,
