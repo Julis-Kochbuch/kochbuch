@@ -11,7 +11,7 @@ COPY backend/package*.json ./backend/
 RUN npm ci
 
 COPY common ./common
-COPY backend ./backend
+COPY --exclude=docker-entrypoint.sh backend ./backend
 COPY themes ./uploads/themes
 
 RUN npm run build -w @kochbuch/common
@@ -32,10 +32,12 @@ FROM node:24 AS production
 
 WORKDIR /app
 
+COPY backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY package*.json ./
 COPY common/package*.json ./common/
 COPY backend/package*.json ./backend/
 
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN npm ci --omit=dev
 
 COPY --from=build /app/backend/dist ./backend/dist
@@ -46,6 +48,7 @@ WORKDIR /app/backend
 
 EXPOSE 5001
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["npm", "start"]
 
 
@@ -54,8 +57,12 @@ CMD ["npm", "start"]
 
 FROM base AS development
 
+COPY backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 WORKDIR /app/backend
 
 EXPOSE 5001
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["npm", "run", "dev"]
