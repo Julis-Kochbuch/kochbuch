@@ -50,14 +50,15 @@ services:
     restart: unless-stopped
     environment:
       CHOKIDAR_USEPOLLING: true
-      DATABASE_HOST: db
-      DATABASE_USER: backend-1
-      DATABASE_DB: kochbuch
-      SESSION_STORE_URL: redis://session-store:6379
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_backend
+      POSTGRES_USER: backend-1
+      POSTGRES_DB: kochbuch
+      REDIS_URL: redis://session-store:6379
       HOSTNAME: ${HOSTNAME:?}
-      PORT: 5001
       HTTP_PROXY_PORT: ${HTTP_PORT-}
       HTTPS_PROXY_PORT: ${HTTPS_PORT-}
+      SESSION_SECRET_FILE: /run/secrets/session_secret
       MODE: dev
     secrets:
       - pg_pw_backend

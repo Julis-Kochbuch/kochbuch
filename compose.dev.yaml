@@ -73,5 +73,17 @@ services:
       traefik.http.routers.pgadmin.rule: Host(`db.${HOSTNAME:?}`)
       traefik.http.services.pgadmin.loadbalancer.server.port: 5004
 
+  container-registry:
+    image: registry:latest
+    restart: unless-stopped
+    volumes:
+      - registry_data:/var/lib/registry
+    labels:
+      traefik.enable: true
+      traefik.http.routers.container-registry.entrypoints: web
+      traefik.http.routers.container-registry.rule: Host(`registry.${HOSTNAME:?}`)
+      traefik.http.services.container-registry.loadbalancer.server.port: 5000
+
 volumes:
   pgadmin_data:
+  registry_data:
