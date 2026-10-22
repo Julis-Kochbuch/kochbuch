@@ -32,8 +32,14 @@ main() {
     : "${REDIS_URL:?REDIS_URL is required}"
     : "${HOSTNAME:?HOSTNAME is required}"
     : "${SESSION_SECRET:?SESSION_SECRET is required}"
-    : "${MODE:=prod}"
-    : "${PORT:=5001}"
+
+    export POSTGRES_HOST
+    export POSTGRES_PASSWORD
+    export REDIS_URL
+    export HOSTNAME
+    export SESSION_SECRET
+    export MODE="${MODE:=prod}"
+    export PORT="${PORT:=5001}"
 
     exec $@
 }

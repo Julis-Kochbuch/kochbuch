@@ -3,7 +3,9 @@ set -euo pipefail
 
 main() {
     : "${HOSTNAME:?HOSTNAME is required}"
-    : "${MODE:=prod}"
+
+    export HOSTNAME
+    export MODE="${MODE:=prod}"
 
     exec $@
 }
