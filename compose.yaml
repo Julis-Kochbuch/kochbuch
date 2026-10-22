@@ -66,11 +66,8 @@ services:
     volumes:
       - uploads:/app/uploads
     depends_on:
-      db:
-        condition: service_healthy
-        restart: true
-      session-store:
-        condition: service_started
+      - db
+      - session-store
     labels:
       traefik.enable: true
       traefik.http.routers.backend.entrypoints: web
