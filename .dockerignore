@@ -2,6 +2,7 @@ node_modules
 dist
 *.md
 .git
+.gitattributes
 .github
 .gitignore
 .gitmodules
