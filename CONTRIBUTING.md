@@ -6,6 +6,12 @@
 
 Workflows can be tested with `act`. The official usage guide can be found [here](https://nektosact.com/usage/).
 
+## Building the installer
+
+```bash
+docker buildx build ./installer -t kochbuch-installer:latest
+```
+
 ### Workflows that require a container registry
 
 `compose.dev.yaml` includes a container registry component that can be used to test workflows that build and push container images.  
