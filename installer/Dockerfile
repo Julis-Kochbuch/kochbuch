@@ -6,6 +6,8 @@ RUN apk add --no-cache \
     openssl \
     ca-certificates
 
+WORKDIR /install
+
 COPY install.sh /usr/local/bin/install.sh
 
 RUN chmod +x /usr/local/bin/install.sh

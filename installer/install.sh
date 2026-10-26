@@ -1,27 +1,19 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-
-echo "$SCRIPT_DIR"
-ls
-
-if [[ -f "$SCRIPT_DIR/.env" ]]; then
-    source "$SCRIPT_DIR/.env"
+if [[ -f ".env" ]]; then
+    source ".env"
 fi
 
-INSTALL_DIR="/install"
+COMPOSE_URL="https://github.com/Julis-Kochbuch/kochbuch/releases/latest/download/compose.yaml"
 
-#COMPOSE_URL="https://github.com/Julis-Kochbuch/kochbuch/releases/latest/download/compose.yaml"
-COMPOSE_URL="https://julis-kochbuch.github.io/theme-default/update.json"
-
-echo -e "Welcome to Juli's Kochbuch installer! \n"
+echo -e "\nWelcome to Juli's Kochbuch installer! \n"
 echo -e "This installer will ask you a few questions before installing Juli's Kochbuch :)"
 read -s -p "Press any button to begin" -n 1 key
 
-if [[ ! -d "$INSTALL_DIR" || ! -w "$INSTALL_DIR" ]]; then
+if [[ ! -d "." || ! -w "." ]]; then
     echo -e "\n\n=====\n"
-    echo "Error: /install must be a writable directory."
+    echo "Error: must be a writable directory."
     exit 1
 fi
 
@@ -33,16 +25,19 @@ echo "SYNTAX: just the plain hostname without https:// or any shenanigans"
 echo "EXAMPLES: abc.com subdomain.example.net anotherexample.org/onemoreexample"
 
 while true; do
-    read -r -p "Hostname: " HOSTNAME
+    if [[ -z ${HOSTNAME:-} ]]; then
+        read -r -p "Hostname: " HOSTNAME
+    else
+        read -r -p "Hostname [$HOSTNAME]: " NEW_HOSTNAME
+    fi
 
     # later add regex validation
-    if [[ -n "$HOSTNAME" ]]; then
+    if [[ -n ${NEW_HOSTNAME:-${HOSTNAME:-}} ]]; then
         break
     fi
+
     echo "ERROR: Invalid hostname."
 done
-
-echo "test"
 
 if [[ -z ${ACME_EMAIL:-} ]]; then
     echo -e "\n=====\n"
@@ -57,7 +52,6 @@ if [[ -z ${ACME_EMAIL:-} ]]; then
             break
         fi
 
-        clear
         echo "ERROR: Invalid e-mail."
     done
 fi
@@ -75,7 +69,7 @@ while true; do
     fi
 done
 
-if [ ! -f "$INSTALL_DIR/secrets/kochbuch_pw_admin" ]; then
+if [ ! -f "secrets/kochbuch_pw_admin" ]; then
     echo -e "\n=====\n"
 
     echo "INFO: Set the password you will use to log in as admin to your Kochbuch instance. You can change this later"
@@ -87,7 +81,6 @@ if [ ! -f "$INSTALL_DIR/secrets/kochbuch_pw_admin" ]; then
             break
         fi
 
-        clear
         echo "ERROR: Invalid password."
     done
 fi
@@ -107,38 +100,38 @@ curl --fail --location --show-error --silent \
 echo "Generating secrets..."
 
 umask 022
-mkdir -p "$INSTALL_DIR/secrets"
+mkdir -p "secrets"
 
-if [ ! -f "$INSTALL_DIR/secrets/kochbuch_pw_admin" ]; then
-    printf '%s' "$PASSWORD" > "$INSTALL_DIR/secrets/kochbuch_pw_admin"
+if [ ! -f "secrets/kochbuch_pw_admin" ]; then
+    printf '%s' "$PASSWORD" > "secrets/kochbuch_pw_admin"
 fi
-if [ ! -f "$INSTALL_DIR/secrets/pg_pw_admin" ]; then
-    openssl rand -hex 64 > "$INSTALL_DIR/secrets/pg_pw_admin"
+if [ ! -f "secrets/pg_pw_admin" ]; then
+    openssl rand -hex 64 > "secrets/pg_pw_admin"
 fi
-if [ ! -f "$INSTALL_DIR/secrets/pg_pw_backend" ]; then
-    openssl rand -hex 64 > "$INSTALL_DIR/secrets/pg_pw_backend"
+if [ ! -f "secrets/pg_pw_backend" ]; then
+    openssl rand -hex 64 > "secrets/pg_pw_backend"
 fi
-if [ ! -f "$INSTALL_DIR/secrets/session_secret" ]; then
-    openssl rand -hex 64 > "$INSTALL_DIR/secrets/session_secret"
+if [ ! -f "secrets/session_secret" ]; then
+    openssl rand -hex 64 > "secrets/session_secret"
 fi
 
-mkdir -p "$INSTALL_DIR/letsencrypt"
+mkdir -p "letsencrypt"
 
-if [ ! -f "$INSTALL_DIR/letsencrypt/acme.json" ]; then
+if [ ! -f "letsencrypt/acme.json" ]; then
     echo "Creating Let's Encrypt files..."
 
-    printf '' > "$INSTALL_DIR/letsencrypt/acme.json"
+    printf '' > "letsencrypt/acme.json"
 fi
 
 echo "Writing environment configuration..."
 
 {
-    printf 'HOSTNAME=%s\n' "$HOSTNAME"
+    printf 'HOSTNAME=%s\n' "${NEW_HOSTNAME:-${HOSTNAME}}"
     printf 'ACME_EMAIL=%s\n' "$ACME_EMAIL"
     printf 'TAG=%s\n' "${TAG:=latest}"
-} > "$INSTALL_DIR/.env"
+} > ".env"
 
-mv "$TMP_COMPOSE" "$INSTALL_DIR/compose.yaml"
+mv "$TMP_COMPOSE" "compose.yaml"
 
 echo -e "\n=====\n"
 echo -e "Installation complete!\n"
