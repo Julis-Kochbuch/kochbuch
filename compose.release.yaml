@@ -1,0 +1,169 @@
+name: kochbuch
+networks:
+  default:
+    name: kochbuch_default
+secrets:
+  kochbuch_pw_admin:
+    file: ./secrets/kochbuch_pw_admin
+    name: kochbuch_kochbuch_pw_admin
+  pg_pw_admin:
+    file: ./secrets/pg_pw_admin
+    name: kochbuch_pg_pw_admin
+  pg_pw_backend:
+    file: ./secrets/pg_pw_backend
+    name: kochbuch_pg_pw_backend
+  session_secret:
+    file: ./secrets/session_secret
+    name: kochbuch_session_secret
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: production
+    depends_on:
+      db:
+        condition: service_started
+        required: true
+      session-store:
+        condition: service_started
+        required: true
+    environment:
+      CHOKIDAR_USEPOLLING: true
+      HOSTNAME: ${HOSTNAME:?}
+      HTTP_PROXY_PORT: ${HTTP_PORT-}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT-}
+      MODE: dev
+      POSTGRES_DB: kochbuch
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_backend
+      POSTGRES_USER: backend-1
+      REDIS_URL: redis://session-store:6379
+      SESSION_SECRET_FILE: /run/secrets/session_secret
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/api
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.middlewares=backend-stripprefix
+      - traefik.http.routers.backend.rule=Host(`${HOSTNAME:?}`) && PathPrefix(`/api`)
+      - traefik.http.services.backend.loadbalancer.server.port=5001
+      - traefik.http.routers.backend.tls.certresolver=letsencrypt
+      - traefik.http.routers.backend.tls=true
+    networks:
+      default: null
+    restart: unless-stopped
+    secrets:
+      - source: pg_pw_backend
+        target: /run/secrets/pg_pw_backend
+      - source: session_secret
+        target: /run/secrets/session_secret
+    volumes:
+      - source: uploads
+        target: /app/uploads
+        type: volume
+        volume: {}
+  client:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+      target: production
+    depends_on:
+      backend:
+        condition: service_started
+        required: true
+    environment:
+      CHOKIDAR_USEPOLLING: true
+      HOSTNAME: ${HOSTNAME:?}
+      HTTP_PROXY_PORT: ${HTTP_PORT-}
+      HTTPS_PROXY_PORT: ${HTTPS_PORT-}
+      MODE: prod
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.client.entrypoints=websecure
+      - traefik.http.routers.client.rule=Host(`${HOSTNAME:?}`)
+      - traefik.http.services.client.loadbalancer.server.port=80
+      - traefik.http.routers.client.tls.certresolver=letsencrypt
+      - traefik.http.routers.client.tls=true
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - read_only: true
+        source: uploads
+        target: /usr/share/nginx/html/uploads
+        type: volume
+        volume: {}
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: kochbuch
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_admin
+    networks:
+      default: null
+    restart: unless-stopped
+    secrets:
+      - source: pg_pw_admin
+        target: /run/secrets/pg_pw_admin
+      - source: pg_pw_backend
+        target: /run/secrets/pg_pw_backend
+      - source: kochbuch_pw_admin
+        target: /run/secrets/kochbuch_pw_admin
+    volumes:
+      - source: postgres_data
+        target: /var/lib/postgresql
+        type: volume
+        volume: {}
+  proxy:
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:?}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    depends_on:
+      client:
+        condition: service_started
+        required: true
+    image: traefik:v3.7
+    networks:
+      default: null
+    ports:
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
+    restart: unless-stopped
+    volumes:
+      - bind:
+          create_host_path: true
+        read_only: true
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        type: bind
+      - bind:
+          create_host_path: true
+        source: ./letsencrypt
+        target: /letsencrypt
+        type: bind
+  session-store:
+    image: redis:alpine
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - source: redis_data
+        target: /data
+        type: volume
+        volume: {}
+volumes:
+  postgres_data:
+    name: kochbuch_postgres_data
+  redis_data:
+    name: kochbuch_redis_data
+  uploads:
+    name: kochbuch_uploads

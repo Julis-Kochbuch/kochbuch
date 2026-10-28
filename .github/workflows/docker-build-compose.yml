@@ -1,0 +1,34 @@
+name: Attach compose file to release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build-compose:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Merge compose files
+        run: |
+          docker compose \
+            -f compose.yaml \
+            -f compose.prod.yaml \
+            config --no-interpolate --no-path-resolution \
+            > compose.release.yaml
+      
+      - name: Verify merged compose file
+        if: ${{ env.ACT }}
+        run: cat compose.release.yaml
+        
+      - name: Upload Compose file to release
+        if: ${{ !env.ACT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} compose.release.yaml#compose.yaml
