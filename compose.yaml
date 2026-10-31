@@ -20,7 +20,7 @@ services:
   # Database
 
   db:
-    image: ghcr.io/julis-kochbuch/kochbuch-database
+    image: ghcr.io/julis-kochbuch/kochbuch-database:${TAG:?}
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_admin
@@ -43,7 +43,7 @@ services:
   # Backend
 
   backend:
-    image: ghcr.io/julis-kochbuch/kochbuch-backend
+    image: ghcr.io/julis-kochbuch/kochbuch-backend:${TAG:?}
     restart: unless-stopped
     environment:
       CHOKIDAR_USEPOLLING: true
@@ -76,7 +76,7 @@ services:
   # Client
 
   client:
-    image: ghcr.io/julis-kochbuch/kochbuch-client
+    image: ghcr.io/julis-kochbuch/kochbuch-client:${TAG:?}
     restart: unless-stopped
     depends_on:
       - backend
