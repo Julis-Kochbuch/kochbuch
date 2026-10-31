@@ -180,7 +180,27 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                     onCloseButtonClick={() => setOpen(false)}
                 >
                     <h2>Share recipe</h2>
-                    <p>Select users:</p>
+                    <p>
+                        Sharing recipe with
+                        <em>
+                        {
+                            selectedUsers.length === 0
+                                ? <> nobody</>
+                                : selectedUsers.length === 1
+                                    ? 
+                                        <> {
+                                            allUsers.local.find((user) => selectedUsers.includes(user.key_id))?.name ??
+                                            allUsers.foreign.find((user) => selectedUsers.includes(user.key_id))?.name
+                                        } </>
+                                    : 
+                                        <> {
+                                            allUsers.local.find((user) => selectedUsers.includes(user.key_id))?.name ??
+                                            allUsers.foreign.find((user) => selectedUsers.includes(user.key_id))?.name
+                                        } and {selectedUsers.length - 1} others</>
+                        }
+                        </em>
+                    </p>
+                    <p>Select users to share this recipe with:</p>
                     <form id='share-form' onSubmit={handleSubmit}>
                         {allUsers.foreign.length > 0 ?
                             <>
@@ -216,6 +236,9 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                             ))
                         }
                     </form>
+                    <p>
+                        Changes must be submitted to be active!
+                    </p>
                     <div className='modal__controls'>
                         <button
                             type="submit"
