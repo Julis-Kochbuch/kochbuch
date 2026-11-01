@@ -41,7 +41,7 @@ main() {
     export MODE="${MODE:=prod}"
     export PORT="${PORT:=5001}"
 
-    exec $@
+    exec "$@"
 }
 
 main "$@"

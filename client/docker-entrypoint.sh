@@ -7,7 +7,7 @@ main() {
     export HOSTNAME
     export MODE="${MODE:=prod}"
 
-    exec $@
+    exec "$@"
 }
 
 main "$@"
