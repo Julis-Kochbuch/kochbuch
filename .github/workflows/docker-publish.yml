@@ -29,6 +29,9 @@ jobs:
             context: .
             dockerfile: client/Dockerfile
             target: production
+          - image: installer
+            context: ./installer
+            dockerfile: installer/Dockerfile
 
     steps:
       - name: Checkout repository
