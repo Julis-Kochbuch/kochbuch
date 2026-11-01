@@ -5,7 +5,7 @@
 1. Install docker
 2. Run
     ```bash
-    docker run --rm -it --mount type=bind,source=.,target=/install ghcr.io/Julis-Kochbuch/kochbuch-installer:latest
+    docker run --rm -it --mount type=bind,source=.,target=/install ghcr.io/julis-kochbuch/kochbuch-installer:latest
     ```
 
 ## Start the whole thing
