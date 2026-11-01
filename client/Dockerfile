@@ -29,6 +29,8 @@ RUN npm run build -w @kochbuch/client
 
 FROM nginx:alpine AS production
 
+RUN apk add --no-cache bash
+
 COPY client/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

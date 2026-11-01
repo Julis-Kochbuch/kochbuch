@@ -2,6 +2,12 @@
 
 ## Setup
 
+1. Install docker
+2. Run
+    ```bash
+    docker run --rm -it --mount type=bind,source=.,target=/install ghcr.io/Julis-Kochbuch/kochbuch-installer:latest
+    ```
+
 ### Environment variables
 
 You have to provide environment variables to Docker. Here's how to do it:
@@ -22,7 +28,7 @@ You have to provide environment variables to Docker. Here's how to do it:
     ACME_EMAIL=
     ```
 4. Fill in the values right after the `=`. Here's what they mean:
-    - `HOSTNAME`: Where your cloud will be reachable online, e.g. `abc.com`, `abc.def.com` or `abc.com/def`
+    - `HOSTNAME`: Where your cookbook will be reachable online, e.g. `abc.com`, `abc.def.com` or `abc.com/def`
     - `ACME_EMAIL`: An e-mail address that will be used for getting a TLS certificate (which you need to establish a safe connection via HTTPS). I recommend not using a throw away address since you might receive actually relevant notifications
 
 > [!IMPORTANT]  

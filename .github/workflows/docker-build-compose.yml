@@ -1,0 +1,48 @@
+name: Attach compose file to release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build-compose:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - filename: compose.yaml
+            files: '["compose.yaml","compose.prod.yaml"]'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Merge compose files
+        env: 
+          FILES: ${{ matrix.files }}
+          OUTPUT_FILE: ${{ matrix.filename }}
+        run: |
+          args=()
+
+          while IFS= read -r file; do
+            args+=(-f "$file")
+          done < <(jq -r '.[]' <<< "$FILES")
+
+          docker compose \
+            "${args[@]}" \
+            config --no-interpolate --no-path-resolution \
+            > "$OUTPUT_FILE"
+      
+      - name: Verify merged compose file
+        if: ${{ env.ACT }}
+        run: cat ${{ matrix.filename }}
+        
+      - name: Upload Compose file to release
+        if: ${{ !env.ACT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} ${{ matrix.filename }}
