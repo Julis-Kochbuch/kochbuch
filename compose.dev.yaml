@@ -79,7 +79,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.pgadmin.entrypoints: web
-      traefik.http.routers.pgadmin.rule: Host(`db.${HOSTNAME:?}`)
+      traefik.http.routers.pgadmin.rule: Host(`db.${APP_HOSTNAME:?}`)
       traefik.http.services.pgadmin.loadbalancer.server.port: 5004
 
   container-registry:
@@ -90,7 +90,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.container-registry.entrypoints: web
-      traefik.http.routers.container-registry.rule: Host(`registry.${HOSTNAME:?}`)
+      traefik.http.routers.container-registry.rule: Host(`registry.${APP_HOSTNAME:?}`)
       traefik.http.services.container-registry.loadbalancer.server.port: 5000
 
 volumes:

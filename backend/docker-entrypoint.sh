@@ -30,13 +30,13 @@ main() {
     : "${POSTGRES_HOST:?POSTGRES_HOST is required}"
     : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
     : "${REDIS_URL:?REDIS_URL is required}"
-    : "${HOSTNAME:?HOSTNAME is required}"
+    : "${APP_HOSTNAME:?APP_HOSTNAME is required}"
     : "${SESSION_SECRET:?SESSION_SECRET is required}"
 
     export POSTGRES_HOST
     export POSTGRES_PASSWORD
     export REDIS_URL
-    export HOSTNAME
+    export APP_HOSTNAME
     export SESSION_SECRET
     export MODE="${MODE:=prod}"
     export PORT="${PORT:=5001}"

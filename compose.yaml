@@ -52,7 +52,7 @@ services:
       POSTGRES_USER: backend-1
       POSTGRES_DB: kochbuch
       REDIS_URL: redis://session-store:6379
-      HOSTNAME: ${HOSTNAME:?}
+      APP_HOSTNAME: ${APP_HOSTNAME:?}
       HTTP_PROXY_PORT: ${HTTP_PORT-}
       HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       SESSION_SECRET_FILE: /run/secrets/session_secret
@@ -68,7 +68,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.backend.entrypoints: web
-      traefik.http.routers.backend.rule: Host(`${HOSTNAME:?}`) && PathPrefix(`/api`)
+      traefik.http.routers.backend.rule: Host(`${APP_HOSTNAME:?}`) && PathPrefix(`/api`)
       traefik.http.routers.backend.middlewares: "backend-stripprefix"
       traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes: "/api"
       traefik.http.services.backend.loadbalancer.server.port: 5001
@@ -82,7 +82,7 @@ services:
       - backend
     environment:
       CHOKIDAR_USEPOLLING: true
-      HOSTNAME: ${HOSTNAME:?}
+      APP_HOSTNAME: ${APP_HOSTNAME:?}
       HTTP_PROXY_PORT: ${HTTP_PORT-}
       HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       MODE: prod
@@ -91,7 +91,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.client.entrypoints: web
-      traefik.http.routers.client.rule: "Host(`${HOSTNAME:?}`)"
+      traefik.http.routers.client.rule: "Host(`${APP_HOSTNAME:?}`)"
       traefik.http.services.client.loadbalancer.server.port: 80
 
 secrets:

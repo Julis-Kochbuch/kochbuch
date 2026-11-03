@@ -2,9 +2,9 @@
 set -euo pipefail
 
 main() {
-    : "${HOSTNAME:?HOSTNAME is required}"
+    : "${APP_HOSTNAME:?APP_HOSTNAME is required}"
 
-    export HOSTNAME
+    export APP_HOSTNAME
     export MODE="${MODE:=prod}"
 
     exec "$@"
