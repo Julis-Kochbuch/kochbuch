@@ -3,7 +3,13 @@
 ## Setup
 
 1. Install docker
-2. Run
+2. Run  
+    on Linux:
+    ```bash
+    docker run --rm --user "$(id -u):$(id -g)" -it --mount type=bind,source=.,target=/install ghcr.io/julis-kochbuch/kochbuch-installer:latest
+    ```
+
+    on Windows:
     ```bash
     docker run --rm -it --mount type=bind,source=.,target=/install ghcr.io/julis-kochbuch/kochbuch-installer:latest
     ```

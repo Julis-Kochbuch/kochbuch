@@ -150,7 +150,9 @@ jobs:
           docker compose \
             "${args[@]}" \
             config --no-interpolate --no-path-resolution \
-            > "$OUTPUT_FILE"
+            > temp_compose
+          
+          cat temp_compose > "$OUTPUT_FILE"
 
       - name: Verify merged compose file
         if: ${{ env.ACT }}
