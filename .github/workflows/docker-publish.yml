@@ -120,6 +120,7 @@ jobs:
         run: gh release create "${TAG}" -t "${TAG}" --generate-notes
     
   build-compose:
+    needs: release
     runs-on: ubuntu-latest
 
     permissions:
