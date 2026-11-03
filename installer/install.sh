@@ -25,14 +25,14 @@ echo "SYNTAX: just the plain hostname without https:// or any shenanigans"
 echo "EXAMPLES: abc.com subdomain.example.net anotherexample.org/onemoreexample"
 
 while true; do
-    if [[ -z ${HOSTNAME:-} ]]; then
-        read -r -p "Hostname: " HOSTNAME
+    if [[ -z ${APP_HOSTNAME:-} ]]; then
+        read -r -p "Hostname: " APP_HOSTNAME
     else
-        read -r -p "Hostname [$HOSTNAME]: " NEW_HOSTNAME
+        read -r -p "Hostname [$APP_HOSTNAME]: " NEW_HOSTNAME
     fi
 
     # later add regex validation
-    if [[ -n ${NEW_HOSTNAME:-${HOSTNAME:-}} ]]; then
+    if [[ -n ${NEW_HOSTNAME:-${APP_HOSTNAME:-}} ]]; then
         break
     fi
 
@@ -42,9 +42,10 @@ done
 if [[ -z ${ACME_EMAIL:-} ]]; then
     echo -e "\n=====\n"
 
+    echo "INFO: An e-mail address that will be used for getting a TLS certificate (which you need to establish a safe connection via HTTPS). I recommend not using a throw away address since you might receive actually relevant notifications (though won't happen often tbh)"
+    echo "SYNTAX: normal e-mail syntax you know the game"
+
     while true; do
-        echo "INFO: An e-mail address that will be used for getting a TLS certificate (which you need to establish a safe connection via HTTPS). I recommend not using a throw away address since you might receive actually relevant notifications (though won't happen often tbh)"
-        echo "SYNTAX: normal e-mail syntax you know the game"
         read -r -p "Acme e-mail: " ACME_EMAIL
 
         # later add regex validation
@@ -60,6 +61,7 @@ echo -e "\n=====\n"
 
 echo "INFO: Do you want to install a specific tag (default: latest)"
 echo "EXAMPLES: 1 1.1 2.2.4 latest"
+
 while true; do
     read -r -p "Tag [latest]: " TAG
 
@@ -126,7 +128,7 @@ fi
 echo "Writing environment configuration..."
 
 {
-    printf 'HOSTNAME=%s\n' "${NEW_HOSTNAME:-${HOSTNAME}}"
+    printf 'APP_HOSTNAME=%s\n' "${NEW_HOSTNAME:-${APP_HOSTNAME}}"
     printf 'ACME_EMAIL=%s\n' "$ACME_EMAIL"
     printf 'TAG=%s\n' "${TAG:=latest}"
 } > ".env"
