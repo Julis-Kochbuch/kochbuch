@@ -220,6 +220,7 @@
 .recipe-step__content {
     display: flex !important;
     flex-direction: row !important;
+    word-break: break-word !important;
 }
 
 :where(.input-recipe-step__content textarea) {
@@ -236,6 +237,10 @@
         text-decoration: line-through;
         opacity: .5;
     }
+}
+
+.recipe-step-index {
+    word-break: initial !important;
 }
 
 :where(.recipe-step-index) {
