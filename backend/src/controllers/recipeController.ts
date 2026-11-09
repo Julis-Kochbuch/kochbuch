@@ -403,7 +403,7 @@ const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Respons
             DELETE FROM ingredients
             WHERE recipe_id = $1
                 AND id <> ALL($2::int[]);
-            `, [id, ingredients.map(ingredient => { return ingredient.id })]);
+            `, [id, ingredients.filter(ingredient => ingredient.id != null).map(ingredient => { return ingredient.id })]);
 
         await Promise.all(
             ingredients.filter(ingredient => { return Number.isInteger(ingredient.id) }).map(ingredient =>
@@ -433,7 +433,7 @@ const recipePost = async (req: Request<{ id: string }, {}, Recipe>, res: Respons
             DELETE FROM steps
             WHERE recipe_id = $1
                 AND id <> ALL($2::int[]);
-            `, [id, steps.map(step => { return step.id })]);
+            `, [id, steps.filter(step => step.id != null).map(step => { return step.id })]);
 
         await Promise.all(
             steps.filter(step => { return Number.isInteger(step.id) }).map(step =>
