@@ -57,7 +57,7 @@ app.use('/theme', themeRoutes);
 
 
 await waitPort({
-    host: process.env.DATABASE_HOST!,
+    host: process.env.POSTGRES_HOST!,
     port: 5432,
     timeout: 10000,
     waitForDns: true,

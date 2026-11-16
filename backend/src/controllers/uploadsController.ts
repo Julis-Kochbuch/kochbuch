@@ -44,7 +44,7 @@ const uploadRecipeImage = async (req: Request<{ id: string }, {}, { slots: numbe
             return res.status(400).json({ message: 'Wrong file type' });
         }
 
-        const image = await sharp(file.buffer)
+        const image = await sharp(file.buffer, { autoOrient: true })
             .resize({
                 width: 1080,
                 height: 1080,
