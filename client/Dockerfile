@@ -12,6 +12,7 @@ RUN npm ci
 
 COPY common ./common
 COPY --exclude=docker-entrypoint.sh client ./client
+COPY i18n ./client/public/translations
 
 RUN npm run build -w @kochbuch/common
 

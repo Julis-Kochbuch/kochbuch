@@ -54,6 +54,9 @@ services:
           target: /app/client
         - path: ./common
           action: rebuild
+        - path: ./i18n
+          action: sync
+          target: /app/client/public/translations
         - path: ./client/package.json
           action: rebuild
     environment:
