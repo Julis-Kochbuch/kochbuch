@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 import Modal from '../../components/Modal';
 import { type ShareableUser, type ShareableUserList } from '@kochbuch/common';
@@ -50,6 +51,10 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
+
     const [selectedUsers, setSelectedUsers] = useState<Number[]>([]);
     const [removedUsers, setRemovedUsers] = useState<Number[]>([]);
     const [allUsers, setAllUsers] = useState<ShareableUserList>({ local: [], foreign: [] });
@@ -71,15 +76,15 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching users failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_users_failed")));
                 }
 
                 setAllUsers(data as ShareableUserList);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 console.log(message);
-                setError("Unable to load users");
+                setError(t(tErrors("unable_to_load_users")));
             } finally {
                 setLoading(false);
             }
@@ -96,15 +101,15 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching shared users failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_shared_users_failed")));
                 }
 
                 setSelectedUsers(data.map((user: { key_id: number }) => user.key_id))
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 console.log(message);
-                setError("Unable to load shared users");
+                setError(t(tErrors("unable_to_load_shared_users")));
             } finally {
                 setLoading(false);
             }
@@ -143,7 +148,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Sharing recipe failed");
+                throw new Error(data.error || data.message || t(tErrors("sharing_recipe_failed")));
             }
         } catch (err) {
             if (!open) {
@@ -154,7 +159,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
 
             setOpen(true);
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setError(message);
         } finally {
             setLoading(false);
@@ -179,28 +184,21 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                 <Modal
                     onCloseButtonClick={() => setOpen(false)}
                 >
-                    <h2>Share recipe</h2>
+                    <h2>{t(tRecipe("share_recipe"))}</h2>
                     <p>
-                        Sharing recipe with
-                        <em>
-                        {
-                            selectedUsers.length === 0
-                                ? <> nobody</>
-                                : selectedUsers.length === 1
-                                    ? 
-                                        <> {
-                                            allUsers.local.find((user) => selectedUsers.includes(user.key_id))?.name ??
-                                            allUsers.foreign.find((user) => selectedUsers.includes(user.key_id))?.name
-                                        } </>
-                                    : 
-                                        <> {
-                                            allUsers.local.find((user) => selectedUsers.includes(user.key_id))?.name ??
-                                            allUsers.foreign.find((user) => selectedUsers.includes(user.key_id))?.name
-                                        } and {selectedUsers.length - 1} others</>
-                        }
-                        </em>
+                        <Trans
+                            i18nKey="sharing"
+                            ns="recipe"
+                            count={selectedUsers.length}
+                            values={{
+                                user: allUsers.local.find((user) => selectedUsers.includes(user.key_id))?.name ?? allUsers.foreign.find((user) => selectedUsers.includes(user.key_id))?.name
+                            }}
+                            components={[
+                                <em />
+                            ]}
+                        />
                     </p>
-                    <p>Select users to share this recipe with:</p>
+                    <p>{t(tRecipe("select_users_to_share_this_recipe_with"))}:</p>
                     <form id='share-form' onSubmit={handleSubmit}>
                         {allUsers.foreign.length > 0 ?
                             <>
@@ -237,14 +235,14 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                         }
                     </form>
                     <p>
-                        Changes must be submitted to be active!
+                        {t(tRecipe("changes_must_be_saved_to_be_active"))}
                     </p>
                     <div className='modal__controls'>
                         <button
                             type="submit"
                             form='share-form'
                         >
-                            Submit
+                            {t("save")}
                         </button>
                         <button
                             type="button"
@@ -255,7 +253,7 @@ const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
                                 })
                             }}
                         >
-                            Cancel
+                            {t("cancel")}
                         </button>
                     </div>
                     {error && <div>{error}</div>}

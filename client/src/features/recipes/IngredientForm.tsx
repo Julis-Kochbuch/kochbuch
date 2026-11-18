@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import type { FieldsetFormProps } from '../../utils/FieldsetFormProps';
 import Fraction from '../../utils/Fraction';
 import FractionInput from '../../components/FractionInput';
@@ -12,13 +14,15 @@ export type Ingredient = {
 };
 
 const IngredientForm = ({ value, index, ref, setAction }: FieldsetFormProps<Ingredient, HTMLInputElement>) => {
+    const { t } = useTranslation("recipe");
+
     return (
         <div className='input-recipe-ingredient__content recipe-ingredient__content'>
             <FractionInput
                 id="amount"
                 ref={ref}
-                placeholder='Amount'
-                title='Amount'
+                placeholder={t("amount")}
+                title={t("amount")}
                 onValueChange={(e) => {
                     setAction(prev => {
                         const next = [...prev];
@@ -40,8 +44,8 @@ const IngredientForm = ({ value, index, ref, setAction }: FieldsetFormProps<Ingr
                 autoComplete="off"
                 autoCapitalize="off"
                 maxLength={16}
-                placeholder='Unit'
-                title='Unit'
+                placeholder={t("unit")}
+                title={t("unit")}
                 onChange={(e) => {
                     setAction(prev => {
                         const next = [...prev];
@@ -59,8 +63,8 @@ const IngredientForm = ({ value, index, ref, setAction }: FieldsetFormProps<Ingr
                 id="text"
                 autoComplete="off"
                 maxLength={64}
-                placeholder='Ingredient'
-                title='Ingredient'
+                placeholder={t("ingredient", {count: 1})}
+                title={t("ingredient", {count: 1})}
                 onChange={(e) => {
                     setAction(prev => {
                         const next = [...prev];
@@ -76,10 +80,10 @@ const IngredientForm = ({ value, index, ref, setAction }: FieldsetFormProps<Ingr
             />
             <textarea
                 id="comment"
-                placeholder='Comment'
+                placeholder={t("comment")}
                 autoComplete="off"
                 autoCapitalize="off"
-                title='Comment'
+                title={t("comment")}
                 onChange={(e) => {
                     setAction(prev => {
                         const next = [...prev];

@@ -1,5 +1,6 @@
 import { NavLink, Outlet, type To } from "react-router";
 import { createPortal } from "react-dom";
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState } from "../utils/GlobalState";
 import BackButton from "../components/BackButton";
@@ -12,10 +13,14 @@ type SettingsProps = {
 const SettingsView = ({  } : SettingsProps) => {
     const globalState = useGlobalState();
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tSettings } = useTranslation("settings");
+
     const pages = [
-        {to: '', text: 'General'},
-        ...((globalState.user?.role === 10) ? [{ to: 'admin', text: 'Admin' }] : []),
-        {to: 'account', text: 'User'},
+        {to: '', text: t(tSettings("general"))},
+        ...((globalState.user?.role === 10) ? [{ to: 'admin', text: t(tSettings("admin")) }] : []),
+        {to: 'account', text: t(tSettings("user"))},
     ] satisfies { to: To; text: string; }[];
 
     return (

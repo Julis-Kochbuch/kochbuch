@@ -1,12 +1,14 @@
 import { createPortal } from "react-dom";
 import { Link, Outlet, Navigate, useMatch } from 'react-router';
-
+import { useTranslation } from 'react-i18next';
 
 import LogoutButton from './LogoutButton';
 import { useGlobalState } from '../../utils/GlobalState'
 
 const ProtectedArea = () => {
     const globalState = useGlobalState();
+
+    const { t } = useTranslation("common");
     
     const recipeEditMatch = useMatch('/recipe/:recipeId/edit');
     const recipeNewMatch = useMatch('/recipe/new');
@@ -19,9 +21,9 @@ const ProtectedArea = () => {
                 {globalState.refs?.headerMenu?.current && createPortal(
                     <>
                         <LogoutButton>
-                            Logout
+                            { t("log_out") }
                         </LogoutButton>
-                        <Link to='/settings'>Settings</Link>
+                        <Link to='/settings'>{t("settings")}</Link>
                     </>,
                 globalState.refs.headerMenu.current)}
                 <Outlet />

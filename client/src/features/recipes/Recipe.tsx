@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from "react-dom";
 import { Link, useOutletContext, useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next';
 
 import { type RecipeOutletContext } from '../../views/RecipeView.js';
 import ShareButton from './ShareButton.js';
@@ -13,6 +14,10 @@ const Recipe = () => {
     const formatter = new Intl.NumberFormat(undefined, {
         maximumFractionDigits: 2,
     });
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
 
     const { recipe } = useOutletContext<RecipeOutletContext>()
 
@@ -28,7 +33,7 @@ const Recipe = () => {
         try {
             dispatchGlobalState({
                 type: "add loading tasks",
-                task: "Deleting recipe"
+                task: t(tRecipe("deleting_recipe"))
             });
 
             const response = await fetch(`${backendAddress}/recipe/${recipe?.id}`, {
@@ -43,17 +48,17 @@ const Recipe = () => {
 
             dispatchGlobalState({
                 type: "remove loading tasks",
-                task: "Deleting recipe"
+                task: t(tRecipe("deleting_recipe"))
             });
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Modifying recipe failed");
+                throw new Error(data.error || data.message || t(tErrors("modifying_recipe_failed")));
             }
 
             navigate("/overview", { replace: true });
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             throw new Error(message);
         }
@@ -77,7 +82,7 @@ const Recipe = () => {
                                 />
                                 <button
                                     type='button'
-                                    aria-label='Delete'
+                                    aria-label={t("delete")}
                                     onClick={() => {
                                         setDeleting(true);
                                         dispatchGlobalState({ type: "open modal" });
@@ -86,7 +91,7 @@ const Recipe = () => {
                             </>
                         }
                         {(recipe?.role == 10) &&
-                            <Link to="edit" tabIndex={-1}><button type='button' disabled={globalState.modalsOpen > 0}>Edit</button></Link>
+                            <Link to="edit" tabIndex={-1}><button type='button' disabled={globalState.modalsOpen > 0}>{t("edit")}</button></Link>
                         }
                     </>,
                     globalState.refs.headerMenu.current)
@@ -119,15 +124,15 @@ const Recipe = () => {
                                 onClick={() => setServings(prev => Math.max(0, prev + 1))}
                             ></button>
                         </div>
-                        <label className='recipe-servings-label' htmlFor='servings'>Servings</label>
+                        <label className='recipe-servings-label' htmlFor='servings'>{t(tRecipe("servings"))}</label>
                     </div>
                     <div className={'recipe-author' + (recipe?.author ? '' : ' empty')}>
                         {recipe?.author}
-                        <div className='recipe-author__title'>Author</div>
+                        <div className='recipe-author__title'>{t(tRecipe("author"))}</div>
                     </div>
                 </div>
                 <div className='recipe-group-ingredients'>
-                    <h2>Ingredients</h2>
+                    <h2>{t(tRecipe("ingredient", {count: 8}))}</h2>
                     <ul>
                         {recipe?.ingredients.map((ingredient) => (
                             <li className='recipe-ingredient__wrapper recipe-ingredient__content'>
@@ -137,7 +142,7 @@ const Recipe = () => {
                     </ul>
                 </div>
                 <div className='recipe-group-steps'>
-                    <h2>Directions</h2>
+                    <h2>{t(tRecipe("step", {count: 8}))}</h2>
                     <ol>
                         {recipe?.steps.map((step, index) => (
                             <div className='recipe-step__wrapper'>
@@ -168,17 +173,17 @@ const Recipe = () => {
                     setDeleting(false);
                     dispatchGlobalState({ type: "close modal" });
                 }}>
-                    <h2>Deleting "{recipe?.name}"</h2>
+                    <h2>{t(tRecipe("deleting_recipe_xyz", { recipe: recipe?.name }))}</h2>
                     <p>
-                        Are you sure you want to delete "{recipe?.name}"?<br />
+                        {t(tRecipe("are_you_sure_you_want_to_delete_recipe_xyz", { recipe: recipe?.name }))}
                     </p>
                     <p>
-                        This is irreversible!
+                        {t("this_is_irreversible")}
                     </p>
                     <div className='modal__controls'>
                         <button
                             type='button'
-                            aria-label='Cancel'
+                            aria-label={t("cancel")}
                             onClick={() => {
                                 setDeleting(false);
                                 dispatchGlobalState({ type: "close modal" });
@@ -186,7 +191,7 @@ const Recipe = () => {
                         </button>
                         <button
                             type='submit'
-                            aria-label='Confirm'
+                            aria-label={t("confirm")}
                             onClick={() => {
                                 setDeleting(false);
                                 dispatchGlobalState({ type: "close modal" });

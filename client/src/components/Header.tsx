@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type JSX } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState, useGlobalStateDispatch } from "../utils/GlobalState";
 import useTheme from "../utils/useTheme";
@@ -15,6 +16,8 @@ const Header = ({ children }: HeaderProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
+    const { t } = useTranslation("common");
+
     const headerMainRef = useRef<HTMLDivElement | null>(null);
     const headerMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -22,7 +25,7 @@ const Header = ({ children }: HeaderProps) => {
 
     useTheme(globalState.settings?.theme);
 
-    useTitle(globalState.user?.name ? globalState.user.name + "s Kochbuch" : "Kochbuch");
+    useTitle(globalState.user?.name ? t("user_xyzs_kochbuch", {user: globalState.user.name}) : t("kochbuch"));
 
     useEffect(() => {
         dispatchGlobalState({

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import SaveButton from '../../components/SaveButton';
@@ -8,6 +9,10 @@ import backendAddress from '../../utils/BackendAddress';
 const AccountSettings = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tSettings } = useTranslation("settings");
 
     const [username, setUsername] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -38,7 +43,7 @@ const AccountSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Action failed");
+                throw new Error(data.error || data.message || t(tErrors("action_failed")));
             }
 
             if (username != "") {
@@ -53,7 +58,7 @@ const AccountSettings = () => {
             setCurrentPassword("");
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setError(message);
         } finally {
             setLoading(false);
@@ -70,7 +75,7 @@ const AccountSettings = () => {
             <form id='account-settings' onSubmit={handleSubmit}>
                 {error && (<p className='error-inline'>{error}</p>)}
                 <fieldset className='settings__content' disabled={loading}>
-                    <label htmlFor="username">Change Username:</label>
+                    <label htmlFor="username">{t(tSettings("change_username"))}:</label>
                     <input
                         type="text"
                         id="username"
@@ -80,7 +85,7 @@ const AccountSettings = () => {
                         onChange={(e) => setUsername(e.target.value)}
                         value={username}
                     />
-                    <label htmlFor="new-password">New password:</label>
+                    <label htmlFor="new-password">{t(tSettings("new_password"))}:</label>
                     <input
                         type="password"
                         id="new-password"
@@ -88,7 +93,7 @@ const AccountSettings = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                         value={newPassword}
                     />
-                    <label htmlFor="current-password">Current password:</label>
+                    <label htmlFor="current-password">{t(tSettings("current_password"))}:</label>
                     <input
                         type="password"
                         id="current-password"

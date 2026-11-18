@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import backendAddress from '../../utils/BackendAddress';
@@ -17,6 +18,9 @@ const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
 
     const [loading, setLoading] = useState(false);
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+
     const handleClick = async () => {
         setLoading(true);
 
@@ -29,7 +33,7 @@ const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Logging out failed");
+                throw new Error(data.error || data.message || t(tErrors("logging_out_failed")));
             }
 
             dispatchGlobalState({
@@ -42,7 +46,7 @@ const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
             })
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             console.error(message)
         } finally {
             setLoading(false);
@@ -54,7 +58,7 @@ const LogoutButton = ({ children, ...props }: LogoutButtonProps) => {
             type="button"
             onClick={handleClick}
             disabled={loading || props.disabled || globalState.modalsOpen > 0}
-            aria-label={props['aria-label'] ?? children ? undefined : "Log out"}
+            aria-label={props['aria-label'] ?? children ? undefined : t("log_out")}
         >
             {children}
         </button>

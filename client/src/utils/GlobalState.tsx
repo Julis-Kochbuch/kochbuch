@@ -185,7 +185,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
 
                 dispatchGlobalState({
                     type: "add loading tasks",
-                    task: "Checking authentification"
+                    task: "Checking authentication"
                 });
 
                 const response = await fetch(`${backendAddress}/user/me`, {
@@ -197,7 +197,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
 
                 dispatchGlobalState({
                     type: "remove loading tasks",
-                    task: "Checking authentification"
+                    task: "Checking authentication"
                 });
 
                 if (!response.ok) {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router';
 import { createPortal } from "react-dom";
+import { useTranslation } from 'react-i18next';
 
 import { type Recipe } from '@kochbuch/common';
 import { type RecipeOutletContext } from './RecipeView.js';
@@ -13,6 +14,10 @@ const NewRecipeView = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -23,7 +28,7 @@ const NewRecipeView = () => {
 
         dispatchGlobalState({
             type: "add loading tasks",
-            task: "Creating recipe"
+            task: t(tRecipe("creating_recipe"))
         });
 
         try {
@@ -40,11 +45,11 @@ const NewRecipeView = () => {
 
             dispatchGlobalState({
                 type: "remove loading tasks",
-                task: "Creating recipe"
+                task: t(tRecipe("creating_recipe"))
             });
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Creating recipe failed");
+                throw new Error(data.error || data.message || t(tErrors("creating_recipe_failed")));
             }
 
             const newId: string = data.id.toString()
@@ -52,7 +57,7 @@ const NewRecipeView = () => {
             return newId;
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setError(message);
             return "-1";
         } finally {
@@ -75,8 +80,8 @@ const NewRecipeView = () => {
                         servings: 1,
                         author: globalState.user?.name,
                         images: [],
-                        ingredients: [{ index_number: 0, amount: 500, unit: "g", text: "Flour" }],
-                        steps: [{ index_number: 0, text: "In a bowl, mix the flour and the salt" }]
+                        ingredients: [{ index_number: 0, amount: Number(t(tRecipe("example_ingredient_amount"))), unit: t(tRecipe("example_ingredient_unit")), text: t(tRecipe("example_ingredient_text")) }],
+                        steps: [{ index_number: 0, text: t(tRecipe("example_step")) }]
                     },
                     disabled: loading,
                     navigateTarget: ((id: string) => { return { to: { pathname: "/recipe/" + id }, options: { replace: true } } }),
@@ -85,9 +90,9 @@ const NewRecipeView = () => {
             />
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
-                    <h2>Error</h2>
+                    <h2>{t(tErrors("error"))}</h2>
                     <p>{error}</p>
-                    <button type='button' onClick={() => setError("")}>OK</button>
+                    <button type='button' onClick={() => setError("")}>{t("ok")}</button>
                 </Modal>
             }
         </>

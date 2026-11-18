@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import SaveButton from '../../components/SaveButton';
@@ -9,6 +10,10 @@ import backendAddress from '../../utils/BackendAddress';
 const GeneralSettings = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tSettings } = useTranslation("settings");
 
     const [themes, setThemes] = useState<string[]>([]);
     const [theme, setTheme] = useState<Theme | string>();
@@ -36,14 +41,13 @@ const GeneralSettings = () => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching themes failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_themes_failed")));
                 }
 
                 setThemes(data.map((themeData: { slug: string }) => { return themeData.slug }));
-                console.log(`Themes: ${themes}`);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 setError(message);
             } finally {
                 setLoading(false);
@@ -74,13 +78,13 @@ const GeneralSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Action failed");
+                throw new Error(data.error || data.message || t(tErrors("action_failed")));
             }
 
             dispatchGlobalState({ type: "set theme", theme: theme })
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             setError(message);
         } finally {
@@ -98,7 +102,7 @@ const GeneralSettings = () => {
             <form id='general-settings' onSubmit={handleSubmit}>
                 {error && (<div className='error-inline'>{error}</div>)}
                 <fieldset className='settings__content' disabled={loading}>
-                    <label id='theme-label' htmlFor="theme">Select Theme:</label>
+                    <label id='theme-label' htmlFor="theme">{t(tSettings("select_theme"))}:</label>
                     <select
                         id="theme"
                         onChange={(e => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { FieldsetFormProps } from '../../utils/FieldsetFormProps';
 import AddButton from '../../components/AddButton';
@@ -21,6 +22,10 @@ export type ImageWithFile = {
 };
 
 const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
+
     const [addingCaption, setAddingCaption] = useState<boolean>(false);
 
     const [error, setError] = useState("");
@@ -47,7 +52,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
             }
 
             if (!file.type.startsWith("image/")) {
-                throw new Error("Please select an image.");
+                throw new Error(t(tErrors("please_select_an_image")));
             }
 
             setAction(prev => {
@@ -64,7 +69,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
             });
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setError(message);
         }
     }
@@ -80,8 +85,8 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
                         fileWasChanged: false
                     })}
                     setAction={setAction}
-                    aria-label='Add image'
-                    title='Add image'
+                    aria-label={t(tRecipe("add_image"))}
+                    title={t(tRecipe("add_image"))}
                 />
             </div>
             :
@@ -99,7 +104,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
                     <div className='input-recipe-image__controls'>
                         <button
                             type='button'
-                            aria-label={((addingCaption) ? "Remove" : "Add") + " caption"}
+                            aria-label={(addingCaption) ? t(tRecipe("remove_caption")) : t(tRecipe("add_caption"))}
                             onClick={() => {
                                 if (addingCaption) {
                                     setAction(prev => {
@@ -118,7 +123,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
                         ></button>
                         <button
                             type='button'
-                            aria-label='Remove image'
+                            aria-label={t(tRecipe("remove_image"))}
                             onClick={() => {
                                 setAction(prev => {
                                     const next = [...prev];
@@ -134,7 +139,7 @@ const ImageForm = ({ value, slot, index, setAction }: ImageFormProps) => {
                 {error && <div>{error}</div>}
                 {(addingCaption) &&
                     <>
-                        <label htmlFor={"image-caption-" + index} id={"image-caption-label-" + index}>Caption:</label>
+                        <label htmlFor={"image-caption-" + index} id={"image-caption-label-" + index}>{t(tRecipe("caption"))}:</label>
                         <input
                             type='text'
                             autoComplete="off"

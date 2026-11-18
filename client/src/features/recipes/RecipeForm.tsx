@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router'
+import { useTranslation } from 'react-i18next';
 
 import CategorySelector from './CategorySelector';
 import IngredientForm, { type Ingredient } from './IngredientForm';
@@ -23,6 +24,10 @@ const RecipeForm = () => {
     const { recipe, disabled, navigateTarget, onFormSubmit } = useOutletContext<RecipeOutletContext>();
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
 
     const navigate = useNavigate();
 
@@ -129,7 +134,7 @@ const RecipeForm = () => {
 
             dispatchGlobalState({
                 type: "add loading tasks",
-                task: "Uploading images"
+                task: t(tRecipe("uploading_images"))
             });
 
             const response = await fetch(`${backendAddress}/uploads/recipe/${recipeId}`, {
@@ -142,15 +147,15 @@ const RecipeForm = () => {
 
             dispatchGlobalState({
                 type: "remove loading tasks",
-                task: "Uploading images"
+                task: t(tRecipe("uploading_images"))
             });
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Uploading images failed");
+                throw new Error(data.error || data.message || t(tErrors("uploading_images_failed")));
             }
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             throw new Error(message)
         }
     }
@@ -181,14 +186,14 @@ const RecipeForm = () => {
             <fieldset className='form form-recipe recipe' disabled={disabled || (globalState.modalsOpen > 0)}>
                 <div className='input-recipe-group-head recipe-group-head'>
                     <div className='recipe-name'>
-                        <label className='input-recipe-name-label' id='recipe-name-label' htmlFor='recipe-name'>Name:</label>
+                        <label className='input-recipe-name-label' id='recipe-name-label' htmlFor='recipe-name'>{t(tRecipe("name"))}:</label>
                         <input
                             type="text"
                             className="input-recipe-name"
                             autoComplete="off"
                             id="recipe-name"
                             maxLength={64}
-                            placeholder="New recipe"
+                            placeholder={t(tRecipe("new_recipe"))}
                             onChange={(e) => setName(e.target.value)}
                             value={name}
                             aria-labelledby='recipe-name-label'
@@ -218,15 +223,15 @@ const RecipeForm = () => {
                             aria-labelledby='servings-label'
                             required
                         />
-                        <label className='input-recipe-servings-label recipe-servings-label' id='recipe-servings-label' htmlFor='recipe-servings'>Servings</label>
+                        <label className='input-recipe-servings-label recipe-servings-label' id='recipe-servings-label' htmlFor='recipe-servings'>{t(tRecipe("servings"))}</label>
                     </div>
                     <div className={'recipe-author' + (recipe?.author ? '' : ' empty')}>
                         {recipe?.author}
-                        <div className='recipe-author__title'>Author</div>
+                        <div className='recipe-author__title'>{t(tRecipe("author"))}</div>
                     </div>
                 </div>
                 <div className='input-recipe-group-ingredients recipe-group-ingredients'>
-                    <h2>Ingredients</h2>
+                    <h2>{t(tRecipe("ingredient", {count: 8}))}</h2>
                     <SortableFieldsetContext
                         value={ingredients}
                         setAction={setIngredients}
@@ -252,7 +257,7 @@ const RecipeForm = () => {
                                 <DeleteButton
                                     index={index}
                                     setAction={setIngredients}
-                                    aria-label='Delete this ingredient'
+                                    aria-label={t(tRecipe("delete_this_ingredient"))}
                                 />
                             </SortableFieldset>
                         ))}
@@ -266,12 +271,12 @@ const RecipeForm = () => {
                             setFocusedId(item.id);
                         }}
                         setAction={setIngredients}
-                        aria-label='Add an ingredient'
-                        title='Add an ingredient'
+                        aria-label={t(tRecipe("add_an_ingredient"))}
+                        title={t(tRecipe("add_an_ingredient"))}
                     />
                 </div>
                 <div className='input-recipe-group-steps recipe-group-steps'>
-                    <h2>Directions</h2>
+                    <h2>{t(tRecipe("step", {count: 8}))}</h2>
                     <SortableFieldsetContext
                         value={steps}
                         setAction={setSteps}
@@ -297,7 +302,7 @@ const RecipeForm = () => {
                                 <DeleteButton
                                     index={index}
                                     setAction={setSteps}
-                                    aria-label='Delete this step'
+                                    aria-label={t(tRecipe("delete_this_step"))}
                                 />
                             </SortableFieldset>
                         ))}
@@ -311,8 +316,8 @@ const RecipeForm = () => {
                             setFocusedId(item.id);
                         }}
                         setAction={setSteps}
-                        aria-label='Add a step'
-                        title='Add a step'
+                        aria-label={t(tRecipe("add_a_step"))}
+                        title={t(tRecipe("add_a_step"))}
                     />
                 </div>
                 <ImageForm
@@ -329,13 +334,13 @@ const RecipeForm = () => {
                 />
                 <div className='input-recipe-group-footer'>
                     <BackButton>
-                        Back
+                        {t("back")}
                     </BackButton>
                     <button
                         type="submit"
                         disabled={disabled}
                     >
-                        Save
+                        {t("save")}
                     </button>
                 </div>
             </fieldset>

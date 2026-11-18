@@ -1,5 +1,6 @@
 import { type JSX } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from 'react-i18next';
 
 import '../assets/css/modal.css';
 import { useGlobalStateDispatch } from "../utils/GlobalState";
@@ -12,7 +13,9 @@ type ModalProps = {
 
 const Modal = ({ onCloseButtonClick, children } : ModalProps) => {
     const dispatchGlobalState = useGlobalStateDispatch();
-    
+
+    const { t } = useTranslation("common");
+
     const modalRoot = document.getElementById("modal-root");
 
     if (!modalRoot) {
@@ -34,7 +37,7 @@ const Modal = ({ onCloseButtonClick, children } : ModalProps) => {
                             type: "close modal"
                         });
                     }}
-                    aria-label="Close"
+                    aria-label={t("close")}
                 />
             )}
         </div>,

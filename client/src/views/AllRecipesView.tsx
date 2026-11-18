@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import { type RecipeListByCategory } from '@kochbuch/common';
 import Modal from '../components/Modal';
@@ -10,6 +11,10 @@ import '../assets/css/recipe-list.css';
 
 const RecipeView = () => {
     const dispatchGlobalState = useGlobalStateDispatch();
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
 
     const [categories, setCategories] = useState<RecipeListByCategory[]>([]);
 
@@ -23,7 +28,7 @@ const RecipeView = () => {
 
             dispatchGlobalState({
                 type: "add loading tasks",
-                task: "Fetching recipes"
+                task: t(tRecipe("fetching_recipes"))
             });
 
             try {
@@ -36,17 +41,17 @@ const RecipeView = () => {
 
                 dispatchGlobalState({
                     type: "remove loading tasks",
-                    task: "Fetching recipes"
+                    task: t(tRecipe("fetching_recipes"))
                 });
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching recipes failed");
+                    throw new Error(data.error || data.message || t(tRecipe("fetching_recipes", {count: 15})));
                 }
 
                 setCategories(data as RecipeListByCategory[]);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 setError(message);
             } finally {
                 setLoading(false);
@@ -57,12 +62,12 @@ const RecipeView = () => {
 
     return (
         <div className={loading ? 'loading' : undefined}>
-            <h1>Recipes</h1>
+            <h1>{t(tRecipe("recipe", {count: 15}))}</h1>
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
-                    <h2>Error</h2>
+                    <h2>{t(tErrors("error"))}</h2>
                     <p>{error}</p>
-                    <button type='button' onClick={() => setError("")}>OK</button>
+                    <button type='button' onClick={() => setError("")}>{t("ok")}</button>
                 </Modal>
             }
             <ul className='recipe-list__wrapper'>

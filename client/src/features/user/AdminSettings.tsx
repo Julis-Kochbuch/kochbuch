@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { type User, type Theme, type ThemeUpdate } from '@kochbuch/common';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
@@ -8,6 +9,10 @@ import backendAddress from '../../utils/BackendAddress';
 const AdminSettings = () => {
     const globalState = useGlobalState();
     const globalStateDispatch = useGlobalStateDispatch();
+
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tSettings } = useTranslation("settings");
 
     const [users, setUsers] = useState<User[]>([]);
     const [currentThemes, setCurrentThemes] = useState<Theme[]>([]);
@@ -38,13 +43,13 @@ const AdminSettings = () => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching users failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_users_failed")));
                 }
 
                 setUsers(data as User[]);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 setError(message);
             } finally {
                 setLoading(false);
@@ -64,7 +69,7 @@ const AdminSettings = () => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching themes failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_themes_failed")));
                 }
 
                 const themeSlugs: string[] = data.map((themeData: { slug: string }) => { return themeData.slug });
@@ -78,7 +83,7 @@ const AdminSettings = () => {
                         const data = await response.json();
 
                         if (!response.ok) {
-                            throw new Error(data.error || data.message || "Fetching theme data failed");
+                            throw new Error(data.error || data.message || t(tErrors("fetching_theme_data_failed")));
                         }
 
                         return data as Theme;
@@ -98,7 +103,7 @@ const AdminSettings = () => {
                         const data = await response.json();
 
                         if (!response.ok) {
-                            throw new Error(data.error || data.message || "Fetching theme data failed");
+                            throw new Error(data.error || data.message || t(tErrors("fetching_theme_data_failed")));
                         }
 
                         return data as ThemeUpdate;
@@ -109,7 +114,7 @@ const AdminSettings = () => {
 
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 setError(message);
             } finally {
                 setLoading(false);
@@ -132,7 +137,7 @@ const AdminSettings = () => {
             globalStateDispatch({ type: "close modal" });
 
             if (userId === globalState.user?.id) {
-                throw new Error("You cannot delete your own user here. Go to Settings -> User");
+                throw new Error(t(tErrors("you_cannot_delete_your_own_user_here")));
             }
 
             const response = await fetch(`${backendAddress}/user/${userId}`, {
@@ -149,7 +154,7 @@ const AdminSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Deleting user failed");
+                throw new Error(data.error || data.message || t(tErrors("deleting_user_failed")));
             }
 
             setUsers(items =>
@@ -167,7 +172,7 @@ const AdminSettings = () => {
             setRole(undefined);
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setDeleting(index);
             globalStateDispatch({ type: "open modal" });
             setError(message);
@@ -186,11 +191,11 @@ const AdminSettings = () => {
             globalStateDispatch({ type: "close modal" });
 
             if (name === undefined || name === "") {
-                throw new Error("Name must not be empty");
+                throw new Error(t(tErrors("name_must_not_be_empty")));
             }
 
             if (role === undefined) {
-                throw new Error("Role must not be undefined");
+                throw new Error(t(tErrors("role_must_not_be_undefined")));
             }
 
             const response = await fetch(`${backendAddress}/user/${userId}`, {
@@ -208,7 +213,7 @@ const AdminSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Modifying user failed");
+                throw new Error(data.error || data.message || t(tErrors("modifying_user_failed")));
             }
 
             setUsers(prev => {
@@ -231,7 +236,7 @@ const AdminSettings = () => {
             setRole(undefined);
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setCurrentlyEditting(index);
             globalStateDispatch({ type: "open modal" });
             setError(message);
@@ -250,11 +255,11 @@ const AdminSettings = () => {
             globalStateDispatch({ type: "close modal" });
 
             if (name === undefined || name === "") {
-                throw new Error("Name must not be empty");
+                throw new Error(t(tErrors("name_must_not_be_empty")));
             }
 
             if (password === "") {
-                throw new Error("Password must not be empty");
+                throw new Error(t(tErrors("password_must_not_be_empty")));
             }
 
             const response = await fetch(`${backendAddress}/user`, {
@@ -272,7 +277,7 @@ const AdminSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Creating user failed");
+                throw new Error(data.error || data.message || t(tErrors("creating_user_failed")));
             }
 
             setUsers(prev => {
@@ -287,7 +292,7 @@ const AdminSettings = () => {
             setPassword("");
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             setCreatingUser(true);
             globalStateDispatch({ type: "open modal" });
@@ -308,7 +313,7 @@ const AdminSettings = () => {
             globalStateDispatch({ type: "close modal" });
 
             if (password === "" || adminPassword === "") {
-                throw new Error("Password must not be empty");
+                throw new Error(t(tErrors("password_must_not_be_empty")));
             }
 
             const response = await fetch(`${backendAddress}/user/${userId}`, {
@@ -326,14 +331,14 @@ const AdminSettings = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Changing password failed");
+                throw new Error(data.error || data.message || t(tErrors("changing_password_failed")));
             }
 
             setName(undefined);
             setRole(undefined);
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             setChangingPassword(index);
             globalStateDispatch({ type: "open modal" });
@@ -345,18 +350,18 @@ const AdminSettings = () => {
 
     return (
         <>
-            <h2>Manage Users</h2>
+            <h2>{t(tSettings("manage_users"))}</h2>
             <ul className='settings-admin-userlist'>
                 {error &&
                     <Modal onCloseButtonClick={() => setError("")}>
-                        <h2>Error</h2>
+                        <h2>{t(tErrors("error"))}</h2>
                         <p>{error}</p>
-                        <button type='button' onClick={() => setError("")}>OK</button>
+                        <button type='button' onClick={() => setError("")}>{t("ok")}</button>
                     </Modal>
                 }
                 <div className='user user-head'>
-                    <div id='username' className='user__name'>Username</div>
-                    <div id='role' className='user__role'>Role</div>
+                    <div id='username' className='user__name'>{t("username")}</div>
+                    <div id='role' className='user__role'>{t("role")}</div>
                 </div>
                 {users.map((user, index) => (
                     <li className='user'>
@@ -407,7 +412,7 @@ const AdminSettings = () => {
                                 <div className='user__controls'>
                                     <button
                                         type='button'
-                                        aria-label='Edit'
+                                        aria-label={t("edit")}
                                         onClick={() => {
                                             setCurrentlyEditting(index);
                                             setDeleting(undefined);
@@ -416,13 +421,13 @@ const AdminSettings = () => {
                                             setRole(user.role);
                                         }}>
                                     </button>
-                                    <button type='button' aria-label='Change password' onClick={() => {
+                                    <button type='button' aria-label={t(tSettings("change_password"))} onClick={() => {
                                         setDeleting(undefined);
                                         setCurrentlyEditting(undefined);
                                         setChangingPassword(index);
                                         globalStateDispatch({ type: "open modal" });
                                     }}></button>
-                                    <button type='button' aria-label='Delete' className='delete-button' onClick={() => {
+                                    <button type='button' aria-label={t("delete")} className='delete-button' onClick={() => {
                                         setDeleting(index);
                                         setCurrentlyEditting(undefined);
                                         setChangingPassword(undefined);
@@ -438,10 +443,15 @@ const AdminSettings = () => {
                         setDeleting(undefined);
                         globalStateDispatch({ type: "close modal" });
                     }}>
-                        <h2>Warning</h2>
-                        <p>Are you sure you want to delete user {users[deleting].name}? This is not reversible!</p>
+                        <h2>{t("warning")}</h2>
+                        <p>
+                            {t(tSettings("are_you_sure_you_want_to_delete_user_xyz", { user: users[deleting].name }))}
+                        </p>
+                        <p>
+                            {t("this_is_irreversible")}
+                        </p>
                         <form className='settings__content' id='password-form' onSubmit={(e) => handleDelete(e, users[deleting].id, deleting)}>
-                            <label htmlFor="password">Your password:</label>
+                            <label htmlFor="password">{t(tSettings("your_password"))}:</label>
                             <input
                                 type="password"
                                 id="password"
@@ -465,9 +475,9 @@ const AdminSettings = () => {
                         setChangingPassword(undefined);
                         globalStateDispatch({ type: "close modal" });
                     }}>
-                        <h2>Change {users[changingPassword].name}s Password</h2>
+                        <h2>{t(tSettings("change_user_xyzs_password", { user: users[changingPassword].name }))}</h2>
                         <form className='settings__content' id='change-password-form' onSubmit={(e) => handleChangingPassword(e, users[changingPassword].id, changingPassword)}>
-                            <label htmlFor="new-password">New password:</label>
+                            <label htmlFor="new-password">{t(tSettings("new_password"))}:</label>
                             <input
                                 type="password"
                                 id="new-password"
@@ -476,7 +486,7 @@ const AdminSettings = () => {
                                 value={password}
                                 required
                             />
-                            <label htmlFor="admin-password">Your password:</label>
+                            <label htmlFor="admin-password">{t(tSettings("your_password"))}:</label>
                             <input
                                 type="password"
                                 id="admin-password"
@@ -488,8 +498,8 @@ const AdminSettings = () => {
                         </form>
                         {error && <p>{error}</p>}
                         <div className='modal__controls'>
-                            <button type='submit' form='change-password-form' aria-label='Submit'></button>
-                            <button type='button' aria-label='Cancel' onClick={() => {
+                            <button type='submit' form='change-password-form' aria-label={t("confirm")}></button>
+                            <button type='button' aria-label={t("cancel")} onClick={() => {
                                 setChangingPassword(undefined);
                                 globalStateDispatch({ type: "close modal" });
                             }}></button>
@@ -500,7 +510,7 @@ const AdminSettings = () => {
             <button
                 type='button'
                 className='add-button'
-                aria-label='Create user'
+                aria-label={t(tSettings("create_new_user"))}
                 onClick={() => {
                     setCreatingUser(true);
                     setCurrentlyEditting(undefined);
@@ -516,9 +526,9 @@ const AdminSettings = () => {
                     setPassword("");
                     globalStateDispatch({ type: "close modal" });
                 }}>
-                    <h2>Create new user</h2>
+                    <h2>{t(tSettings("create_new_user"))}</h2>
                     <form className='settings__content' id='create-user' onSubmit={handleNewUserSubmit}>
-                        <label htmlFor="new-username">Username:</label>
+                        <label htmlFor="new-username">{t("username")}:</label>
                         <input
                             type="text"
                             id="new-username"
@@ -527,7 +537,7 @@ const AdminSettings = () => {
                             onChange={(e) => setName(e.target.value)}
                             value={name}
                         />
-                        <label htmlFor="password">Password:</label>
+                        <label htmlFor="password">{t("password")}:</label>
                         <input
                             type="password"
                             id="password"
@@ -541,9 +551,9 @@ const AdminSettings = () => {
                             type="submit"
                             form='create-user'
                             disabled={loading}
-                            aria-label='Save'
+                            aria-label={t("save")}
                         ></button>
-                        <button type='button' aria-label='Cancel' onClick={() => {
+                        <button type='button' aria-label={t("cancel")} onClick={() => {
                             setCreatingUser(false);
                             setName(undefined);
                             setRole(undefined);
@@ -553,12 +563,12 @@ const AdminSettings = () => {
                     </div>
                 </Modal>
             }
-            <h2>Manage Themes</h2>
+            <h2>{t(tSettings("manage_themes"))}</h2>
             <ul className='settings-admin-userlist'>
                 {error != "" && <p>{error}</p>}
                 <div className='user user-head'>
-                    <div id='theme' className='user__name'>Theme</div>
-                    <div id='version' className='user__role'>Version</div>
+                    <div id='theme' className='user__name'>{t(tSettings("theme"))}</div>
+                    <div id='version' className='user__role'>{t(tSettings("version"))}</div>
                 </div>
                 {currentThemes.map((theme, index) => (
                     <li className='user'>
@@ -566,7 +576,7 @@ const AdminSettings = () => {
                         <div className='user__role' aria-labelledby='version'>{theme.version ?? ""}</div>
                         <div className='user__controls'>
                             {(!theme.version || !upToDateThemes[index]?.version || theme.version === upToDateThemes[index]?.version) ?
-                                <button disabled>No update available</button>
+                                <button disabled>{t(tSettings("no_update_available"))}</button>
                                 :
                                 <button
                                     onClick={() => {
@@ -574,7 +584,7 @@ const AdminSettings = () => {
                                             try {
                                                 globalStateDispatch({
                                                     type: "add loading tasks",
-                                                    task: `Updating ${theme.slug} theme`
+                                                    task: t(tSettings("updating_xyz_theme", {theme: theme.slug}))
                                                 })
                                                 const response = await fetch(`${backendAddress}/theme/${theme.slug}`, {
                                                     method: "POST",
@@ -585,11 +595,11 @@ const AdminSettings = () => {
 
                                                 globalStateDispatch({
                                                     type: "remove loading tasks",
-                                                    task: `Updating ${theme.slug} theme`
+                                                    task: t(tSettings("updating_xyz_theme", {theme: theme.slug}))
                                                 })
 
                                                 if (!response.ok) {
-                                                    throw new Error(data.error || data.message || "Updating theme failed");
+                                                    throw new Error(data.error || data.message || t(tErrors("updating_theme_failed")));
                                                 }
 
                                                 window.location.reload();

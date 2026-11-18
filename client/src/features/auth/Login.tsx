@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
 import Modal from '../../components/Modal';
@@ -12,6 +13,10 @@ const Login = () => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
+    const { t } = useTranslation("authentication");
+    const { t: tCommon } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,7 +29,7 @@ const Login = () => {
 
         dispatchGlobalState({
             type: "add loading tasks",
-            task: "Logging in"
+            task: t("logging_in")
         });
 
         try {
@@ -46,7 +51,7 @@ const Login = () => {
 
             dispatchGlobalState({
                 type: "remove loading tasks",
-                task: "Logging in"
+                task: t("logging_in")
             });
 
             if (!response.ok) {
@@ -54,7 +59,7 @@ const Login = () => {
                     type: "set auth status",
                     authStatus: "unauthenticated"
                 })
-                throw new Error(data.error || data.message || "Login failed");
+                throw new Error(data.error || data.message || t(tErrors("login_failed")));
             }
 
             dispatchGlobalState({
@@ -70,7 +75,7 @@ const Login = () => {
             const responseData = await userResponse.json();
 
             if (!userResponse.ok) {
-                throw new Error(data.error || data.message || "Fetching user data failed");
+                throw new Error(data.error || data.message || t(tErrors("fetching_user_data_failed")));
             }
 
             const userData = responseData as UserFull;
@@ -99,33 +104,33 @@ const Login = () => {
             <>
                 <form onSubmit={handleSubmit} className='login-form' id='login-form'>
                     <fieldset disabled={(error || loading) ? true : false}>
-                        <label htmlFor="username">Username:</label>
+                        <label htmlFor="username">{t(tCommon("username"))}:</label>
                         <input
                             type="text"
                             id="username"
                             autoComplete="username"
                             autoCapitalize="off"
-                            placeholder="Enter Username here"
+                            placeholder={t("enter_username_here")}
                             maxLength={32}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
                         />
-                        <label htmlFor="password">Password:</label>
+                        <label htmlFor="password">{t(tCommon("password"))}:</label>
                         <input
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            placeholder="Enter Password here"
+                            placeholder={t("enter_password_here")}
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                             required
                         />
                         {error &&
                             <Modal onCloseButtonClick={() => setError("")}>
-                                <h2>Error</h2>
+                                <h2>{t(tErrors("error"))}</h2>
                                 <p>{error}</p>
-                                <button type='button' onClick={() => setError("")}>OK</button>
+                                <button type='button' onClick={() => setError("")}>{t(tCommon("ok"))}</button>
                             </Modal>
                         }
                     </fieldset>
@@ -136,7 +141,7 @@ const Login = () => {
                         disabled={loading}
                         form='login-form'
                     >
-                        {loading ? "Logging in..." : "Log in"}
+                        {loading ? (t("logging_in") + "...") : t("log_in")}
                     </button>
                 </div>
             </>

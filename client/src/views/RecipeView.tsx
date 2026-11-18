@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useParams, type To, type NavigateOptions } from "react-router";
 import { createPortal } from "react-dom";
+import { useTranslation } from 'react-i18next';
 
 import { type Recipe } from '@kochbuch/common';
 import BackButton from '../components/BackButton';
@@ -30,6 +31,10 @@ export type RecipeOutletContext = {
 const RecipeView = () => {
     let { recipeId } = useParams();
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
+
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
@@ -45,7 +50,7 @@ const RecipeView = () => {
 
             dispatchGlobalState({
                 type: "add loading tasks",
-                task: "Loading recipe"
+                task: t(tRecipe("loading_recipe"))
             });
 
             try {
@@ -58,17 +63,17 @@ const RecipeView = () => {
 
                 dispatchGlobalState({
                     type: "remove loading tasks",
-                    task: "Loading recipe"
+                    task: t(tRecipe("loading_recipe"))
                 });
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Load;ing recipe failed");
+                    throw new Error(data.error || data.message || t(tErrors("loading_recipe_failed")));
                 }
 
                 setRecipe(data as Recipe);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
                 setError(message);
             } finally {
                 setLoading(false);
@@ -84,12 +89,12 @@ const RecipeView = () => {
 
         dispatchGlobalState({
             type: "add loading tasks",
-            task: "Saving changes"
+            task: t(tRecipe("saving_changes"))
         });
 
         try {
             if (!recipeId) {
-                throw new Error("Modifying recipe failed");
+                throw new Error(t(tErrors("modifying_recipe_failed")));
             }
 
             const response = await fetch(`${backendAddress}/recipe/${recipeId}`, {
@@ -105,18 +110,18 @@ const RecipeView = () => {
 
             dispatchGlobalState({
                 type: "remove loading tasks",
-                task: "Saving changes"
+                task: t(tRecipe("saving_changes"))
             });
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Modifying recipe failed");
+                throw new Error(data.error || data.message || t(tErrors("modifying_recipe_failed")));
             }
 
             setRecipe(recipe);
             return recipeId;
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
             setError(message);
             return "-1";
         } finally {
@@ -134,9 +139,9 @@ const RecipeView = () => {
             <Outlet context={{ recipe: recipe, setRecipe: setRecipe, disabled: loading, navigateTarget: -1, onFormSubmit: handleSubmit } satisfies RecipeOutletContext} />
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
-                    <h2>Error</h2>
+                    <h2>{t(tErrors("error"))}</h2>
                     <p>{error}</p>
-                    <button type='button' onClick={() => setError("")}>OK</button>
+                    <button type='button' onClick={() => setError("")}>{t("ok")}</button>
                 </Modal>
             }
         </>

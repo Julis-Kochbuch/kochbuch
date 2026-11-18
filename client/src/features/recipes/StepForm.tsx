@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import type { FieldsetFormProps } from '../../utils/FieldsetFormProps';
 
 export type Step = {
@@ -7,6 +9,8 @@ export type Step = {
 };
 
 const StepForm = ({ value, index, ref, setAction }: FieldsetFormProps<Step, HTMLTextAreaElement>) => {
+    const { t } = useTranslation("recipe");
+
     return (
         <div className='input-recipe-step__content recipe-step__content'>
             <div className='recipe-step-index'>
@@ -26,6 +30,7 @@ const StepForm = ({ value, index, ref, setAction }: FieldsetFormProps<Step, HTML
                     });
                 }}
                 value={value.text}
+                title={t("step", {count: 1})}
                 required
             />
         </div>

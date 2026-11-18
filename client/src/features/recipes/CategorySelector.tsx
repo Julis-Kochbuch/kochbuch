@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Modal from '../../components/Modal';
 import { useGlobalState, useGlobalStateDispatch } from '../../utils/GlobalState';
@@ -21,6 +22,10 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
     const globalState = useGlobalState();
     const globalStateDispatch = useGlobalStateDispatch();
 
+    const { t } = useTranslation("common");
+    const { t: tErrors } = useTranslation("errors");
+    const { t: tRecipe } = useTranslation("recipe");
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [newCategory, setNewCategory] = useState<string>("");
     const [edittingCategories, setEdittingCategories] = useState(false);
@@ -41,13 +46,13 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || data.message || "Fetching categories failed");
+                    throw new Error(data.error || data.message || t(tErrors("fetching_categories_failed")));
                 }
 
                 setCategories(data as Category[]);
             } catch (err) {
                 const message =
-                    err instanceof Error ? err.message : "Unexpected error";
+                    err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
                 throw new Error(message);
             }
@@ -87,9 +92,9 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
 
             if (!response.ok) {
                 if (categoryId === undefined) {
-                    throw new Error(data.error || data.message || "Creating category failed");
+                    throw new Error(data.error || data.message || t(tErrors("creating_category_failed")));
                 } else {
-                    throw new Error(data.error || data.message || "Editting category failed");
+                    throw new Error(data.error || data.message || t(tErrors("editting_category_failed")));
                 }
             }
 
@@ -103,7 +108,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
             });
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             setCurrentlyEditting(index);
             setError(message);
@@ -120,7 +125,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
 
         try {
             if (categoryId === undefined) {
-                throw new Error("Error occured while selecting category to be deleted");
+                throw new Error(t(tErrors("error_occured_while_selecting_category_to_be_deleted")));
             }
 
             const response = await fetch(`${backendAddress}/recipe/categories/` + categoryId, {
@@ -134,7 +139,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.message || "Deleting category failed");
+                throw new Error(data.error || data.message || t(tErrors("deleting_category_failed")));
             }
 
             setCategories(items =>
@@ -142,7 +147,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
             );
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : "Unexpected error";
+                err instanceof Error ? err.message : t(tErrors("unexpected_error"));
 
             setError(message);
         } finally {
@@ -152,7 +157,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
 
     return (
         <>
-            <label className='recipe-category-label' htmlFor="recipe-category" id='recipe-category-label'>Category:</label>
+            <label className='recipe-category-label' htmlFor="recipe-category" id='recipe-category-label'>{t(tRecipe("category"))}:</label>
             <select
                 id="recipe-category"
                 className='input-recipe-category'
@@ -163,7 +168,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                 aria-labelledby='recipe-category-label'
                 disabled={loading || globalState.modalsOpen > 0}
             >
-                <option value={""}>None</option>
+                <option value={""}>{t("none")}</option>
                 {
                     categories.map((category) => (
                         <option key={category.id} value={category.id}>
@@ -174,7 +179,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
             </select>
             <button
                 type='button'
-                aria-label='Edit categories'
+                aria-label={t(tRecipe("edit_categories"))}
                 onClick={() => {
                     setEdittingCategories(true);
                     globalStateDispatch({ type: 'open modal' })
@@ -189,7 +194,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                         globalStateDispatch({ type: 'close modal' })
                     }}
                 >
-                    <h2>Edit categories</h2>
+                    <h2>{t(tRecipe("edit_categories"))}</h2>
                     <ul className='categories'>
                         {categories.map((category, index) => (
                             <li className='category'>
@@ -209,13 +214,13 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                                         <div className='category__controls'>
                                             <button
                                                 type='button'
-                                                aria-label='Cancel'
+                                                aria-label={t("cancel")}
                                                 onClick={() => {
                                                     setCurrentlyEditting(undefined);
                                                     setNewCategory("");
                                                 }}
                                             ></button>
-                                            <button type='submit' form='category-form' aria-label='Save'></button>
+                                            <button type='submit' form='category-form' aria-label={t("save")}></button>
                                         </div>
                                     </form>
                                     :
@@ -224,7 +229,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                                         <div className='category__controls'>
                                             <button
                                                 type='button'
-                                                aria-label='Edit'
+                                                aria-label={t("edit")}
                                                 onClick={() => {
                                                     setCurrentlyEditting(index);
                                                     setNewCategory(category.name);
@@ -233,7 +238,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                                             <button
                                                 type='button'
                                                 className='delete-button'
-                                                aria-label='Delete'
+                                                aria-label={t("delete")}
                                                 onClick={() => {
                                                     handleDelete(category.id, index)
                                                 }}
@@ -247,8 +252,8 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                     <AddButton
                         createItem={() => ({ id: undefined, name: "" } as Category)}
                         setAction={setCategories}
-                        aria-label='Add category'
-                        title='Add category'
+                        aria-label={t(tRecipe("add_category"))}
+                        title={t(tRecipe("add_category"))}
                         onClick={() => {
                             setCurrentlyEditting(categories.length);
                             setNewCategory(categories[categories.length].name);
@@ -258,7 +263,7 @@ const CategorySelector = ({ value, setAction }: CategorySelectorProps) => {
                     <div className='modal__controls'>
                         <button
                             type='button'
-                            aria-label='Close'
+                            aria-label={t("close")}
                             onClick={() => {
                                 setCurrentlyEditting(undefined);
                                 setNewCategory("");

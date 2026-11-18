@@ -2,6 +2,7 @@ import { DndContext, PointerSensor, TouchSensor, useSensor, useSensors, type Dra
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { JSX } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type React from 'react';
 
@@ -17,6 +18,8 @@ export type SortableFieldsetContextProps<T extends WithId> = {
 
 const SortableFieldsetContext = <T extends WithId,>({ value, setAction, children }: SortableFieldsetContextProps<T>) => {
 
+    const { t } = useTranslation("accessibility");
+
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -30,6 +33,10 @@ const SortableFieldsetContext = <T extends WithId,>({ value, setAction, children
             },
         }),
     );
+
+    const screenReaderInstructions = {
+        draggable: t("drag_and_drop")
+    };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -49,6 +56,9 @@ const SortableFieldsetContext = <T extends WithId,>({ value, setAction, children
             modifiers={[restrictToVerticalAxis]}
             sensors={sensors}
             onDragEnd={handleDragEnd}
+            accessibility={{
+                screenReaderInstructions
+            }}
         >
             <SortableContext
                 items={value.map(value => value.id)}

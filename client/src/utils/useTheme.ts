@@ -1,8 +1,11 @@
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 
 import { type Theme } from "@kochbuch/common";
 
 const useTheme = (theme?: Theme | string) => {
+    const { t } = useTranslation("errors");
+    
     useEffect(() => {
         if (!theme) return;
 
@@ -22,12 +25,12 @@ const useTheme = (theme?: Theme | string) => {
                     const data = await response.json();
 
                     if (!response.ok) {
-                        throw new Error(data.error || data.message || "Fetching theme data failed");
+                        throw new Error(data.error || data.message || t("fetching_theme_data_failed"));
                     }
 
                     themeData = data as Theme;
                 } catch (err) {
-                    const message = err instanceof Error ? err.message : "Unexpected error";
+                    const message = err instanceof Error ? err.message : t("unexprected_error");
                     console.log(message);
                     return;
                 }

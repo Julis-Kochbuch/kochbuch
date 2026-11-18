@@ -11,11 +11,18 @@ i18n
         "default": ["en"]
     },
 
+    lng: "en",
+
     ns: [
-      "navigation",
-      "dashboard",
-      "authentication"
+      "accessibility",
+      "authentication",
+      "common",
+      "errors",
+      "recipe",
+      "settings"
     ],
+
+    defaultNS: "common",
 
     backend: {
       loadPath: "/translations/{{lng}}/{{ns}}.json"
