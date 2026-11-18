@@ -1,0 +1,22 @@
+{
+    "back": "Back",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "kochbuch": "Kochbuch",
+    "log_out": "Log out",
+    "none": "None",
+    "ok": "OK",
+    "password": "Password",
+    "recipe_one": "Recipe",
+    "recipe_other": "Recipes",
+    "role": "Role",
+    "save": "Save",
+    "settings": "Settings",
+    "this_is_irreversible": "This is irreversible!",
+    "username": "Username",
+    "user_xyzs_kochbuch": "{{user}}'s Kochbuch",
+    "warning": "Warning"
+}

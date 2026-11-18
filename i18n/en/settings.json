@@ -1,0 +1,20 @@
+{
+    "user": "User",
+    "admin": "Admin",
+    "are_you_sure_you_want_to_delete_user_xyz": "Are you sure you want to delete user \"{{user}}\"?",
+    "change_username": "Change username",
+    "change_password": "Change password",
+    "change_user_xyzs_password": "Change {{user}}'s password",
+    "create_new_user": "Create new user",
+    "current_password": "Current password",
+    "general": "General",
+    "manage_themes": "Manage themes",
+    "manage_users": "Manage users",
+    "new_password": "New password",
+    "no_update_available": "No update available",
+    "select_theme": "Select Theme",
+    "theme": "Theme",
+    "updating_xyz_theme": "Updating {{theme}} theme",
+    "version": "Version",
+    "your_password": "Your password"
+}
