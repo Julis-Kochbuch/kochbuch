@@ -1,0 +1,23 @@
+{
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "kochbuch": "Kochbuch",
+    "loading": "Lädt",
+    "log_out": "Abmelden",
+    "none": "Keine",
+    "ok": "Okay",
+    "password": "Passwort",
+    "recipe_one": "Rezept",
+    "recipe_other": "Rezepte",
+    "role": "Rolle",
+    "save": "Speichern",
+    "settings": "Einstellungen",
+    "this_is_irreversible": "Diese Aktion ist unumkehrbar!",
+    "username": "Nutzername",
+    "user_xyzs_kochbuch": "{{user}}s Kochbuch",
+    "warning": "Achtung"
+}

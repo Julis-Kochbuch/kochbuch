@@ -1,0 +1,21 @@
+{
+    "user": "Nutzer*in",
+    "admin": "Administration",
+    "are_you_sure_you_want_to_delete_user_xyz": "Bist du sicher, dass du die/den Nutzer*in \"{{user}}\" löschen möchtest?",
+    "change_username": "Nutzername ändern",
+    "change_password": "Passwort ändern",
+    "change_user_xyzs_password": "{{user}}s Passwort ändern",
+    "create_new_user": "Neue*n Nutzer*in erstellen",
+    "current_password": "Aktuelles Passwort",
+    "download_version_xyz": "{{version}} herunterladen",
+    "general": "Allgemein",
+    "manage_themes": "Themes verwalten",
+    "manage_users": "Nutzer*innen verwalten",
+    "new_password": "Neues Passwort",
+    "no_update_available": "Keine Aktualisierung verfügbar",
+    "select_theme": "Theme auswählen",
+    "theme": "Theme",
+    "updating_xyz_theme": "Das Theme {{theme}} wird aktualisiert",
+    "version": "Version",
+    "your_password": "Dein Passwort"
+}
