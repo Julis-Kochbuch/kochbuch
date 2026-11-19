@@ -124,7 +124,7 @@ const Recipe = () => {
                                 onClick={() => setServings(prev => Math.max(0, prev + 1))}
                             ></button>
                         </div>
-                        <label className='recipe-servings-label' htmlFor='servings'>{t(tRecipe("servings"))}</label>
+                        <label className='recipe-servings-label' htmlFor='servings'>{t(tRecipe("servings", {count: servings}))}</label>
                     </div>
                     <div className={'recipe-author' + (recipe?.author ? '' : ' empty')}>
                         {recipe?.author}
@@ -132,7 +132,7 @@ const Recipe = () => {
                     </div>
                 </div>
                 <div className='recipe-group-ingredients'>
-                    <h2>{t(tRecipe("ingredient", {count: 8}))}</h2>
+                    <h2>{t(tRecipe("ingredient", {count: recipe?.ingredients.length}))}</h2>
                     <ul>
                         {recipe?.ingredients.map((ingredient) => (
                             <li className='recipe-ingredient__wrapper recipe-ingredient__content'>
@@ -142,7 +142,7 @@ const Recipe = () => {
                     </ul>
                 </div>
                 <div className='recipe-group-steps'>
-                    <h2>{t(tRecipe("step", {count: 8}))}</h2>
+                    <h2>{t(tRecipe("step", {count: recipe?.steps.length}))}</h2>
                     <ol>
                         {recipe?.steps.map((step, index) => (
                             <div className='recipe-step__wrapper'>

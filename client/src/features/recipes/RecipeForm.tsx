@@ -223,7 +223,7 @@ const RecipeForm = () => {
                             aria-labelledby='servings-label'
                             required
                         />
-                        <label className='input-recipe-servings-label recipe-servings-label' id='recipe-servings-label' htmlFor='recipe-servings'>{t(tRecipe("servings"))}</label>
+                        <label className='input-recipe-servings-label recipe-servings-label' id='recipe-servings-label' htmlFor='recipe-servings'>{t(tRecipe("servings", {count: Number(servings)}))}</label>
                     </div>
                     <div className={'recipe-author' + (recipe?.author ? '' : ' empty')}>
                         {recipe?.author}
@@ -231,7 +231,7 @@ const RecipeForm = () => {
                     </div>
                 </div>
                 <div className='input-recipe-group-ingredients recipe-group-ingredients'>
-                    <h2>{t(tRecipe("ingredient", {count: 8}))}</h2>
+                    <h2>{t(tRecipe("ingredient", {count: recipe?.ingredients.length}))}</h2>
                     <SortableFieldsetContext
                         value={ingredients}
                         setAction={setIngredients}
@@ -276,7 +276,7 @@ const RecipeForm = () => {
                     />
                 </div>
                 <div className='input-recipe-group-steps recipe-group-steps'>
-                    <h2>{t(tRecipe("step", {count: 8}))}</h2>
+                    <h2>{t(tRecipe("step", {count: recipe?.steps.length}))}</h2>
                     <SortableFieldsetContext
                         value={steps}
                         setAction={setSteps}
