@@ -47,13 +47,15 @@ const UserCheckbox = ({ selectedUsersHook, removedUsersHook, user, disabled }: U
     );
 }
 
-const ShareButton = ({ recipeId, children = "Share" }: ShareButtonProps) => {
+const ShareButton = ({ recipeId, ...props }: ShareButtonProps) => {
     const globalState = useGlobalState();
     const dispatchGlobalState = useGlobalStateDispatch();
 
     const { t } = useTranslation("common");
     const { t: tErrors } = useTranslation("errors");
     const { t: tRecipe } = useTranslation("recipe");
+
+    const children = props.children ?? t(tRecipe("share"));
 
     const [selectedUsers, setSelectedUsers] = useState<Number[]>([]);
     const [removedUsers, setRemovedUsers] = useState<Number[]>([]);

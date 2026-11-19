@@ -125,7 +125,7 @@ const GeneralSettings = () => {
                         type="submit"
                         disabled={loading}
                     >
-                        {loading ? "Loading..." : "Save"}
+                        {loading ? (t("loading") + "...") : t("save")}
                     </button>
                 </fieldset>
             </form>

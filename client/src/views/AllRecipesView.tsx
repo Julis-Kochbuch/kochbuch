@@ -62,7 +62,7 @@ const RecipeView = () => {
 
     return (
         <div className={loading ? 'loading' : undefined}>
-            <h1>{t(tRecipe("recipe", {count: 15}))}</h1>
+            <h1>{t("recipe", {count: 15})}</h1>
             {error &&
                 <Modal onCloseButtonClick={() => setError("")}>
                     <h2>{t(tErrors("error"))}</h2>

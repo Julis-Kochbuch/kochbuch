@@ -395,14 +395,14 @@ const AdminSettings = () => {
                                 <div className='user__controls'>
                                     <button
                                         type='button'
-                                        aria-label='Cancel'
+                                        aria-label={t("cancel")}
                                         onClick={() => {
                                             setCurrentlyEditting(undefined);
                                             setName(undefined);
                                             setRole(undefined);
                                         }}>
                                     </button>
-                                    <button type='submit' aria-label='Save'></button>
+                                    <button type='submit' aria-label={t("save")}></button>
                                 </div>
                             </form>
                             :
@@ -462,8 +462,8 @@ const AdminSettings = () => {
                             />
                         </form>
                         <div className='modal__controls'>
-                            <button type='submit' form='password-form' aria-label='Delete'></button>
-                            <button type='button' aria-label='Cancel' onClick={() => {
+                            <button type='submit' form='password-form' aria-label={t("delete")}></button>
+                            <button type='button' aria-label={t("cancel")} onClick={() => {
                                 setDeleting(undefined);
                                 globalStateDispatch({ type: "close modal" });
                             }}></button>
@@ -611,7 +611,7 @@ const AdminSettings = () => {
                                         updateTheme();
                                     }}
                                 >
-                                    {`Download ${upToDateThemes[index]?.version}`}
+                                    {t(tSettings("download_version_xyz", {version: upToDateThemes[index]?.version}))}
                                 </button>
                             }
                         </div>

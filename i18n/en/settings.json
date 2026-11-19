@@ -7,6 +7,7 @@
     "change_user_xyzs_password": "Change {{user}}'s password",
     "create_new_user": "Create new user",
     "current_password": "Current password",
+    "download_version_xyz": "Download {{version}}",
     "general": "General",
     "manage_themes": "Manage themes",
     "manage_users": "Manage users",
