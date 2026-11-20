@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useGlobalState, useGlobalStateDispatch } from "../utils/GlobalState";
 import useTheme from "../utils/useTheme";
 import useTitle from "../utils/useTitle";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 import '../assets/css/header.css';
 
@@ -44,6 +45,7 @@ const Header = ({ children }: HeaderProps) => {
                         {children}
                     </div>
                     <div className="header__portal-menu">
+                        <LanguageSwitcher />
                         <button type="button" className="menu-button" onClick={() => setMenuOpen(!menuOpen)}></button>
                         <div className="header__portal-menu__items" ref={headerMenuRef} aria-expanded={menuOpen} onClick={() => setMenuOpen(false)}></div>
                     </div>
