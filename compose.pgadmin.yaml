@@ -1,0 +1,20 @@
+services:
+  pgadmin:
+    image: elestio/pgadmin:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=login@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=password
+      - PGADMIN_LISTEN_PORT=5004
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pgadmin.entrypoints: web
+      traefik.http.routers.pgadmin.rule: Host(`db.${APP_HOSTNAME:?}`)
+      traefik.http.services.pgadmin.loadbalancer.server.port: 5004
+
+volumes:
+  registry_data:
