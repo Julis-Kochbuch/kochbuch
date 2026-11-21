@@ -1,3 +1,6 @@
+include:
+  - compose.dev.yaml
+
 services:
   pgadmin:
     image: elestio/pgadmin:latest
@@ -8,6 +11,9 @@ services:
       - PGADMIN_DEFAULT_EMAIL=login@pgadmin.org
       - PGADMIN_DEFAULT_PASSWORD=password
       - PGADMIN_LISTEN_PORT=5004
+    networks:
+      - proxy
+      - internal
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     labels:
@@ -15,6 +21,12 @@ services:
       traefik.http.routers.pgadmin.entrypoints: web
       traefik.http.routers.pgadmin.rule: Host(`db.${APP_HOSTNAME:?}`)
       traefik.http.services.pgadmin.loadbalancer.server.port: 5004
+
+networks:
+  proxy:
+    external: true
+  internal:
+    internal: true
 
 volumes:
   registry_data:

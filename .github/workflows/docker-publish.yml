@@ -136,7 +136,9 @@ jobs:
       matrix:
         include:
           - filename: compose.yaml
-            files: '["compose.yaml","compose.prod.yaml"]'
+            files: '["compose.traefik.yaml","compose.prod.yaml"]'
+          - filename: compose.no-traefik.yaml
+            files: '["compose.prod.yaml"]'
 
     steps:
       - name: Checkout repository

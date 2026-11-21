@@ -1,22 +1,5 @@
 services:
 
-  # Proxy
-
-  proxy:
-    image: traefik:v3.7
-    restart: unless-stopped
-    command:
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-
-      - --entrypoints.web.address=:80
-    ports:
-      - ${HTTP_PORT:-80}:80
-    depends_on:
-      - client
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
   # Database
 
   db:
@@ -25,6 +8,8 @@ services:
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_pw_admin
       POSTGRES_DB: kochbuch
+    networks:
+      - internal
     secrets:
       - pg_pw_admin
       - pg_pw_backend
@@ -37,6 +22,8 @@ services:
   session-store:
     image: redis:alpine
     restart: unless-stopped
+    networks:
+      - internal
     volumes:
       - redis_data:/data
 
@@ -57,6 +44,9 @@ services:
       HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       SESSION_SECRET_FILE: /run/secrets/session_secret
       MODE: dev
+    networks:
+      - proxy
+      - internal
     secrets:
       - pg_pw_backend
       - session_secret
@@ -86,6 +76,8 @@ services:
       HTTP_PROXY_PORT: ${HTTP_PORT-}
       HTTPS_PROXY_PORT: ${HTTPS_PORT-}
       MODE: prod
+    networks:
+      - proxy
     volumes:
       - uploads:/usr/share/nginx/html/uploads:ro
     labels:
@@ -93,6 +85,12 @@ services:
       traefik.http.routers.client.entrypoints: web
       traefik.http.routers.client.rule: "Host(`${APP_HOSTNAME:?}`)"
       traefik.http.services.client.loadbalancer.server.port: 80
+
+networks:
+  proxy:
+    external: true
+  internal:
+    internal: true
 
 secrets:
   pg_pw_admin:
