@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, type ActionDispatch, type JSX, type RefObject } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { type Theme, type UserFull } from '@kochbuch/common';
 import backendAddress from './BackendAddress';
@@ -166,6 +167,8 @@ type GlobalStateProviderProps = {
 };
 
 export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
+    const { t } = useTranslation("common");
+
     const [globalState, dispatchGlobalState] = useReducer(globalStateReducer, {
         authStatus: "loading",
         user: {},
@@ -185,7 +188,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
 
                 dispatchGlobalState({
                     type: "add loading tasks",
-                    task: "Checking authentication"
+                    task: t("checking_authentication")
                 });
 
                 const response = await fetch(`${backendAddress}/user/me`, {
@@ -197,7 +200,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
 
                 dispatchGlobalState({
                     type: "remove loading tasks",
-                    task: "Checking authentication"
+                    task: t("checking_authentication")
                 });
 
                 if (!response.ok) {
