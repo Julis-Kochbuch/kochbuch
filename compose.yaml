@@ -57,6 +57,7 @@ services:
       - session-store
     labels:
       traefik.enable: true
+      traefik.providers.docker.network: proxy
       traefik.http.routers.backend.entrypoints: web
       traefik.http.routers.backend.rule: Host(`${APP_HOSTNAME:?}`) && PathPrefix(`/api`)
       traefik.http.routers.backend.middlewares: "backend-stripprefix"
@@ -82,6 +83,7 @@ services:
       - uploads:/usr/share/nginx/html/uploads:ro
     labels:
       traefik.enable: true
+      traefik.providers.docker.network: proxy
       traefik.http.routers.client.entrypoints: web
       traefik.http.routers.client.rule: "Host(`${APP_HOSTNAME:?}`)"
       traefik.http.services.client.loadbalancer.server.port: 80

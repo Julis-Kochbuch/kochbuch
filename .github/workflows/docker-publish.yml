@@ -136,7 +136,7 @@ jobs:
       matrix:
         include:
           - filename: compose.yaml
-            files: '["compose.traefik.yaml","compose.prod.yaml"]'
+            files: '["compose.traefik.prod.yaml","compose.prod.yaml"]'
           - filename: compose.no-traefik.yaml
             files: '["compose.prod.yaml"]'
 
